@@ -1,2 +1,5 @@
 PyOpenGL
 PyInstaller
+pygame
+numpy
+PyGlm
