@@ -6,7 +6,7 @@ with open(get_resource_path("assets/shader/vertex.glsl"), "r") as f:
 with open(get_resource_path("assets/shader/fragment.glsl"), "r") as f:
     src_fragment = f.read()
 
-from OpenGL.GL import *
+from terraimmerse.client.blaze3d.Context import *
 
 def compile_shader(source, shader_type):
     shader = glCreateShader(shader_type)

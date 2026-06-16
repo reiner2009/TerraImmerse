@@ -1,12 +1,5 @@
-import os
-import contextlib
+from terraimmerse.client.blaze3d.Context import*
 
-from terraimmerse.util import get_resource_path
-
-with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
-    import pygame
-    from pygame.locals import *
-from OpenGL.GL import *
 
 def load_texture(path):
     surface = pygame.image.load(get_resource_path(path)).convert_alpha()
