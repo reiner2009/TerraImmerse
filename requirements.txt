@@ -3,3 +3,4 @@ PyInstaller
 pygame
 numpy
 PyGlm
+opensimplex

@@ -38,14 +38,16 @@ class TerraImmerse:
             0.1,
             2000.0
         )
-        self.camera_pos = glm.vec3(0, 0, 3)
+        self.camera_pos = glm.vec3(0, 130, 0)
         self.sensitivity = 0.002
-        self.player.setPos(*glm.vec3(0, 0, -3))
+        self.player.setPos(*glm.vec3(0, 130, 0))
         self.speed=0.1
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.stop()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                    b3d.initialize()
             self.drawScene()
     def getInstance(self):
         return self
