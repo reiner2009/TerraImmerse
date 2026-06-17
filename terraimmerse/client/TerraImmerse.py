@@ -24,7 +24,7 @@ class TerraImmerse:
         self.loc_model = glGetUniformLocation(self.shader, "model")
         self.loc_view = glGetUniformLocation(self.shader, "view")
         self.loc_proj = glGetUniformLocation(self.shader, "projection")
-        self.texture = load_texture("assets/bricks.png")
+        self.texture = load_texture("assets/atlas.png")
         self.tex_loc = glGetUniformLocation(self.shader, "tex")
         self.model = glm.mat4(1.0)
         self.view = glm.lookAt(
@@ -38,22 +38,21 @@ class TerraImmerse:
             0.1,
             2000.0
         )
-        self.camera_pos = glm.vec3(0, 130, 0)
+        self.camera_pos = glm.vec3(0, 5, 0)
         self.sensitivity = 0.002
-        self.player.setPos(*glm.vec3(0, 130, 0))
+        self.player.setPos(*glm.vec3(0, 5, 0))
         self.speed=0.1
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.stop()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                    b3d.initialize()
+                    b3d.rebuild()
             self.drawScene()
     def getInstance(self):
         return self
     def stop(self):
         self.running=False
-
     def drawScene(self):
         self.checkMovement()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
