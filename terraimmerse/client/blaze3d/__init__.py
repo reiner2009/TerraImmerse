@@ -14,12 +14,15 @@ def getVertexList():
 
 chunk=Chunk(0,0)
 
-for x in range(16):
-    for z in range(16):
-        value = noise2(x * 0.02, z * 0.02) * 20 + 20
+for x in range(50):
+    for z in range(50):
+        value = noise2(x * 0.02, z * 0.02) * 10 + 10
         ay = round(value)
         for y in range(ay):
-            chunk.setMaterial(x, y, z, "grass_cube")
+            chunk.setMaterial(x, y, z, "dirt_cube")
+for pos, m in chunk.get().items():
+    if (pos[0], pos[1]+1, pos[2]) not in chunk.get().keys():
+        chunk.setMaterial(*pos, "grass_cube")
 
 atlas_data={
     "grass": [0,0],
@@ -28,7 +31,8 @@ atlas_data={
 }
 
 texture_data={
-    "grass_cube": ["grass", "dirt", "grass_side", "grass_side", "grass_side", "grass_side"]
+    "grass_cube": ["grass", "dirt", "grass_side", "grass_side", "grass_side", "grass_side"],
+    "dirt_cube":["dirt", "dirt", "dirt", "dirt", "dirt", "dirt"]
 }
 
 atlas_w=2

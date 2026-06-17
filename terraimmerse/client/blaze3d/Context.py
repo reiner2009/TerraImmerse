@@ -15,17 +15,12 @@ def get_resolution():
     return width, height
 
 def init_gl():
-    pygame.mixer.pre_init(frequency=44100, size=16, channels=2, buffer=4096)
     pygame.init()
-    pygame.mixer.init()
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
     pygame.display.gl_set_attribute(
         pygame.GL_CONTEXT_PROFILE_MASK,
         pygame.GL_CONTEXT_PROFILE_CORE
-    )
-    pygame.display.gl_set_attribute(
-        pygame.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG, 1
     )
     pygame.display.set_mode((width, height), DOUBLEBUF | OPENGL, vsync=1)
     pygame.display.set_caption("TerraImmerse")
