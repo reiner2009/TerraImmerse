@@ -1,7 +1,7 @@
 from math import radians
 
-from terraimmerse.client.blaze3d.Context import*
-import terraimmerse.client.blaze3d as b3d
+from terraimmerse.client.blaze3d import*
+import terraimmerse.client.blaze3d.world.Chunk as ClientChunk
 import terraimmerse.client.blaze3d.Shader as Shader
 import glm
 import math
@@ -13,18 +13,21 @@ from terraimmerse.world.entity.PlayerEntity import PlayerEntity
 class TerraImmerse:
     def __init__(self):
         self.running=True
-        init_gl()
-        b3d.initialize()
+        self.glContext = glContext()
+        self.glContext.init_gl()
+        self.clientChunk = ClientChunk.ClientChunk(ClientChunk.chunk)
+        self.clientChunk.build()
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
         self.player=PlayerEntity()
         self.clock=pygame.time.Clock()
-        self.width, self.height = get_resolution()
-        self.shader=Shader.create_shader_program(Shader.src_vertex, Shader.src_fragment)
+        self.width, self.height = self.glContext.get_resolution()
+        self.shaderCompiler= Shader.ShaderCompiler()
+        self.shader=self.shaderCompiler.create_shader_program(self.shaderCompiler.src_vertex, self.shaderCompiler.src_fragment)
         self.loc_model = glGetUniformLocation(self.shader, "model")
         self.loc_view = glGetUniformLocation(self.shader, "view")
         self.loc_proj = glGetUniformLocation(self.shader, "projection")
-        self.texture = load_texture("assets/atlas.png")
+        self.texture = load_texture("assets/textures/atlas.png")
         self.tex_loc = glGetUniformLocation(self.shader, "tex")
         self.model = glm.mat4(1.0)
         self.view = glm.lookAt(
@@ -47,7 +50,7 @@ class TerraImmerse:
                 if event.type == pygame.QUIT:
                     self.stop()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                    b3d.rebuild()
+                    ClientChunk.rebuild()
             self.drawScene()
     def getInstance(self):
         return self
@@ -63,8 +66,8 @@ class TerraImmerse:
         glUniformMatrix4fv(self.loc_model, 1, GL_FALSE, glm.value_ptr(self.model))
         glUniformMatrix4fv(self.loc_view, 1, GL_FALSE, glm.value_ptr(self.view))
         glUniformMatrix4fv(self.loc_proj, 1, GL_FALSE, glm.value_ptr(self.projection))
-        glBindVertexArray(b3d.getVao())
-        glDrawArrays(GL_TRIANGLES, 0, int(len(b3d.getVertexList())/5))
+        glBindVertexArray(self.clientChunk.getVao())
+        glDrawArrays(GL_TRIANGLES, 0, int(len(self.clientChunk.getVertices())/5))
         glBindVertexArray(0)
         pygame.display.flip()
     def checkMovement(self):

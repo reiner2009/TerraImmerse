@@ -75,10 +75,3 @@ def getVertices(x, y, z, material, chunk, atlas_data, atlas_w, atlas_h, texture_
             for i in neighbors[neighbor]:
                 vertices.append(i)
     return vertices
-
-# TOP (+Y)
-# BOTTOM (-Y)
-# FRONT (+Z)
-# BACK (-Z)
-# LEFT (-X)
-# RIGHT (+X)
