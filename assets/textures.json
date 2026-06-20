@@ -1,0 +1,5 @@
+{
+  "grass_cube": ["grass", "dirt", "grass_side", "grass_side", "grass_side", "grass_side"],
+  "dirt_cube":["dirt", "dirt", "dirt", "dirt", "dirt", "dirt"],
+  "stone_cube":["stone", "stone", "stone", "stone", "stone", "stone"]
+}

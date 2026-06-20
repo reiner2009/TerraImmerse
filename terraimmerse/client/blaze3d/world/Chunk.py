@@ -2,33 +2,50 @@ import numpy as np
 from terraimmerse.client.blaze3d import*
 import terraimmerse.client.blaze3d.world.Material as Material
 from terraimmerse.world.Chunk import Chunk
-from opensimplex import noise2
+from opensimplex import noise2, noise3
+import json
 
 chunk=Chunk(0,0)
 
-for x in range(50):
-    for z in range(50):
-        value = noise2(x * 0.02, z * 0.02) * 10 + 10
+size=200
+
+for x in range(size):
+    for z in range(size):
+        value = noise2(x * 0.02, z * 0.02) * 10 + 50
         ay = round(value)
         for y in range(ay):
-            chunk.setMaterial(x, y, z, "dirt_cube")
+            chunk.setMaterial(x, y, z, "stone_cube")
+for x in range(size):
+    for z in range(size):
+        value = noise2(x * 0.02, z * 0.02) * 10 + 50
+        value1 = noise2(x * 0.1, z * 0.1) * 15 + 50 + value
+        ay = round(value1)
+        for y in range(ay):
+            chunk.setMaterial(x, y, z, "stone_cube")
+for pos, m in chunk.get().items():
+    if (pos[0], pos[1]+2, pos[2]) not in chunk.get().keys() and (pos[0], pos[1]+1, pos[2]) in chunk.get().keys():
+        chunk.setMaterial(*pos, "dirt_cube")
 for pos, m in chunk.get().items():
     if (pos[0], pos[1]+1, pos[2]) not in chunk.get().keys():
         chunk.setMaterial(*pos, "grass_cube")
+for x in range(size):
+    for z in range(size):
+        for y in range(100):
+            cave = noise3(
+                x * 0.1,
+                y * 0.1,
+                z * 0.1
+            )
+            if cave > 0.4:
+                try:
+                    chunk.setMaterial(x, y, z, "air")
+                except KeyError as e:
+                    pass
 
-atlas_data={
-    "grass": [0,0],
-    "grass_side": [0,1],
-    "dirt": [1,0]
-}
-
-texture_data={
-    "grass_cube": ["grass", "dirt", "grass_side", "grass_side", "grass_side", "grass_side"],
-    "dirt_cube":["dirt", "dirt", "dirt", "dirt", "dirt", "dirt"]
-}
-
-atlas_w=2
-atlas_h=2
+atlas_data=json.load(open(get_resource_path("assets/atlas.json")))
+texture_data=json.load(open(get_resource_path("assets/textures.json")))
+atlas_w=atlas_data["w"]
+atlas_h=atlas_data["h"]
 
 class ClientChunk:
     def __init__(self, chunk):

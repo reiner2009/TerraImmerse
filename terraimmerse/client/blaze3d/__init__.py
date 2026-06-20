@@ -33,3 +33,4 @@ class glContext:
         glCullFace(GL_BACK)
         glFrontFace(GL_CCW)
         glViewport(0, 0, self.width, self.height)
+        glClearColor(0.2, 0.4, 0.8, 1.0)
