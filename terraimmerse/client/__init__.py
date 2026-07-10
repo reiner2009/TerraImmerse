@@ -8,14 +8,17 @@ import math
 
 from terraimmerse.client.Textures import load_texture
 from terraimmerse.world.entity.PlayerEntity import PlayerEntity
-
+from terraimmerse.world.Chunk import Chunk
+from terraimmerse.world.WorldGenerator import createWorld
 
 class TerraImmerse:
     def __init__(self):
+        self.chunk=Chunk(0,0)
+        createWorld(self.chunk)
         self.running=True
         self.glContext = glContext()
         self.glContext.init_gl()
-        self.clientChunk = ClientChunk.ClientChunk(ClientChunk.chunk)
+        self.clientChunk = ClientChunk.ClientChunk(self.chunk)
         self.clientChunk.build()
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
@@ -27,10 +30,13 @@ class TerraImmerse:
         self.loc_model = glGetUniformLocation(self.shader, "model")
         self.loc_view = glGetUniformLocation(self.shader, "view")
         self.loc_proj = glGetUniformLocation(self.shader, "projection")
+        self.loc_dayl = glGetUniformLocation(self.shader, "daylight")
         self.sky_vao = glGenVertexArrays(1)
         self.texture = load_texture("assets/textures/atlas.png")
         self.tex_loc = glGetUniformLocation(self.shader, "tex")
         self.model = glm.mat4(1.0)
+        self.daylight=1.0
+        self.time_direction=-0.1
         self.view = glm.lookAt(
             glm.vec3(0, 0, 3),
             glm.vec3(0, 0, 0),
@@ -48,7 +54,7 @@ class TerraImmerse:
         self.speed=0.1
         while self.running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or (event.type==KEYDOWN and event.key==K_ESCAPE):
                     self.stop()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                     ClientChunk.rebuild()
@@ -57,13 +63,22 @@ class TerraImmerse:
         return self
     def stop(self):
         self.running=False
+    def tickLight(self):
+        """if self.daylight<=0.1:
+            self.time_direction=0.001
+        elif self.daylight>=1.0:
+            self.time_direction=-0.001
+        self.daylight+=self.time_direction"""
+        pass
     def drawScene(self):
+        self.tickLight()
         self.checkMovement()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glUseProgram(self.shader)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture)
         glUniform1i(self.tex_loc, 0)
+        glUniform1f(self.loc_dayl, self.daylight)
         glUniformMatrix4fv(self.loc_model, 1, GL_FALSE, glm.value_ptr(self.model))
         glUniformMatrix4fv(self.loc_view, 1, GL_FALSE, glm.value_ptr(self.view))
         glUniformMatrix4fv(self.loc_proj, 1, GL_FALSE, glm.value_ptr(self.projection))
