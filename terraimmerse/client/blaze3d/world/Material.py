@@ -18,55 +18,55 @@ def getVertices(x, y, z, material, chunk, atlas_data, atlas_w, atlas_h, texture_
     right_texture_tx=atlas_data[texture_data[material][5]][0]/atlas_w
     right_texture_ty=atlas_data[texture_data[material][5]][1]/atlas_h
     TOP=[
-        0 + x, 1 + y, 1 + z, top_texture_tx, top_texture_ty+h,
-        1 + x, 1 + y, 0 + z, top_texture_tx+w, top_texture_ty,
-        0 + x, 1 + y, 0 + z, top_texture_tx, top_texture_ty,
-        1 + x, 1 + y, 1 + z, top_texture_tx+w, top_texture_ty+h,
-        1 + x, 1 + y, 0 + z, top_texture_tx+w, top_texture_ty,
-        0 + x, 1 + y, 1 + z, top_texture_tx, top_texture_ty+h
+        0 + x, 1 + y, 1 + z, top_texture_tx, top_texture_ty+h, 0, 1, 0,
+        1 + x, 1 + y, 0 + z, top_texture_tx+w, top_texture_ty, 0, 1, 0,
+        0 + x, 1 + y, 0 + z, top_texture_tx, top_texture_ty, 0, 1, 0,
+        1 + x, 1 + y, 1 + z, top_texture_tx+w, top_texture_ty+h, 0, 1, 0,
+        1 + x, 1 + y, 0 + z, top_texture_tx+w, top_texture_ty, 0, 1, 0,
+        0 + x, 1 + y, 1 + z, top_texture_tx, top_texture_ty+h, 0, 1, 0
     ]
     BOTTOM=[
-        0 + x, 0 + y, 0 + z, bottom_texture_tx, bottom_texture_ty,
-        1 + x, 0 + y, 0 + z, bottom_texture_tx+w, bottom_texture_ty,
-        0 + x, 0 + y, 1 + z, bottom_texture_tx, bottom_texture_ty+h,
-        1 + x, 0 + y, 0 + z, bottom_texture_tx+w, bottom_texture_ty,
-        1 + x, 0 + y, 1 + z, bottom_texture_tx+w, bottom_texture_ty+h,
-        0 + x, 0 + y, 1 + z, bottom_texture_tx, bottom_texture_ty+h
+        0 + x, 0 + y, 0 + z, bottom_texture_tx, bottom_texture_ty, 0, -1, 0,
+        1 + x, 0 + y, 0 + z, bottom_texture_tx+w, bottom_texture_ty, 0, -1, 0,
+        0 + x, 0 + y, 1 + z, bottom_texture_tx, bottom_texture_ty+h, 0, -1, 0,
+        1 + x, 0 + y, 0 + z, bottom_texture_tx+w, bottom_texture_ty, 0, -1, 0,
+        1 + x, 0 + y, 1 + z, bottom_texture_tx+w, bottom_texture_ty+h, 0, -1, 0,
+        0 + x, 0 + y, 1 + z, bottom_texture_tx, bottom_texture_ty+h, 0, -1, 0
     ]
     FRONT = [
-        0 + x, 0 + y, 1 + z, front_texture_tx, front_texture_ty + h,
-        1 + x, 0 + y, 1 + z, front_texture_tx + w, front_texture_ty + h,
-        0 + x, 1 + y, 1 + z, front_texture_tx, front_texture_ty,
-        1 + x, 0 + y, 1 + z, front_texture_tx + w, front_texture_ty + h,
-        1 + x, 1 + y, 1 + z, front_texture_tx + w, front_texture_ty,
-        0 + x, 1 + y, 1 + z, front_texture_tx, front_texture_ty
+        0 + x, 0 + y, 1 + z, front_texture_tx, front_texture_ty + h, 0, 0, 1,
+        1 + x, 0 + y, 1 + z, front_texture_tx + w, front_texture_ty + h, 0, 0, 1,
+        0 + x, 1 + y, 1 + z, front_texture_tx, front_texture_ty, 0, 0, 1,
+        1 + x, 0 + y, 1 + z, front_texture_tx + w, front_texture_ty + h, 0, 0, 1,
+        1 + x, 1 + y, 1 + z, front_texture_tx + w, front_texture_ty, 0, 0, 1,
+        0 + x, 1 + y, 1 + z, front_texture_tx, front_texture_ty, 0, 0, 1
     ]
 
     BACK = [
-        1 + x, 0 + y, 0 + z, back_texture_tx, back_texture_ty + h,
-        0 + x, 0 + y, 0 + z, back_texture_tx + w, back_texture_ty + h,
-        1 + x, 1 + y, 0 + z, back_texture_tx, back_texture_ty,
-        0 + x, 0 + y, 0 + z, back_texture_tx + w, back_texture_ty + h,
-        0 + x, 1 + y, 0 + z, back_texture_tx + w, back_texture_ty,
-        1 + x, 1 + y, 0 + z, back_texture_tx, back_texture_ty
+        1 + x, 0 + y, 0 + z, back_texture_tx, back_texture_ty + h, 0, 0, -1,
+        0 + x, 0 + y, 0 + z, back_texture_tx + w, back_texture_ty + h, 0, 0, -1,
+        1 + x, 1 + y, 0 + z, back_texture_tx, back_texture_ty, 0, 0, -1,
+        0 + x, 0 + y, 0 + z, back_texture_tx + w, back_texture_ty + h, 0, 0, -1,
+        0 + x, 1 + y, 0 + z, back_texture_tx + w, back_texture_ty, 0, 0, -1,
+        1 + x, 1 + y, 0 + z, back_texture_tx, back_texture_ty, 0, 0, -1
     ]
 
     LEFT = [
-        0 + x, 0 + y, 0 + z, left_texture_tx, left_texture_ty + h,
-        0 + x, 0 + y, 1 + z, left_texture_tx + w, left_texture_ty + h,
-        0 + x, 1 + y, 0 + z, left_texture_tx, left_texture_ty,
-        0 + x, 0 + y, 1 + z, left_texture_tx + w, left_texture_ty + h,
-        0 + x, 1 + y, 1 + z, left_texture_tx + w, left_texture_ty,
-        0 + x, 1 + y, 0 + z, left_texture_tx, left_texture_ty
+        0 + x, 0 + y, 0 + z, left_texture_tx, left_texture_ty + h, -1, 0, 0,
+        0 + x, 0 + y, 1 + z, left_texture_tx + w, left_texture_ty + h, -1, 0, 0,
+        0 + x, 1 + y, 0 + z, left_texture_tx, left_texture_ty, -1, 0, 0,
+        0 + x, 0 + y, 1 + z, left_texture_tx + w, left_texture_ty + h, -1, 0, 0,
+        0 + x, 1 + y, 1 + z, left_texture_tx + w, left_texture_ty, -1, 0, 0,
+        0 + x, 1 + y, 0 + z, left_texture_tx, left_texture_ty, -1, 0, 0
     ]
 
     RIGHT = [
-        1 + x, 0 + y, 1 + z, right_texture_tx, right_texture_ty + h,
-        1 + x, 0 + y, 0 + z, right_texture_tx + w, right_texture_ty + h,
-        1 + x, 1 + y, 1 + z, right_texture_tx, right_texture_ty,
-        1 + x, 0 + y, 0 + z, right_texture_tx + w, right_texture_ty + h,
-        1 + x, 1 + y, 0 + z, right_texture_tx + w, right_texture_ty,
-        1 + x, 1 + y, 1 + z, right_texture_tx, right_texture_ty
+        1 + x, 0 + y, 1 + z, right_texture_tx, right_texture_ty + h, 1, 0, 0,
+        1 + x, 0 + y, 0 + z, right_texture_tx + w, right_texture_ty + h, 1, 0, 0,
+        1 + x, 1 + y, 1 + z, right_texture_tx, right_texture_ty, 1, 0, 0,
+        1 + x, 0 + y, 0 + z, right_texture_tx + w, right_texture_ty + h, 1, 0, 0,
+        1 + x, 1 + y, 0 + z, right_texture_tx + w, right_texture_ty, 1, 0, 0,
+        1 + x, 1 + y, 1 + z, right_texture_tx, right_texture_ty, 1, 0, 0
     ]
     vertices = []
     neighbors = {(0,1,0):TOP, (0,-1,0):BOTTOM, (0,0,1):FRONT, (0,0,-1):BACK, (-1, 0, 0):LEFT, (1,0,0):RIGHT}

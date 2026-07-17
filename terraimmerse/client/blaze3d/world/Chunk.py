@@ -35,7 +35,7 @@ class ClientChunk:
             3,
             GL_FLOAT,
             GL_FALSE,
-            5 * 4,
+            8 * 4,
             ctypes.c_void_p(0)
         )
         glEnableVertexAttribArray(0)
@@ -44,10 +44,20 @@ class ClientChunk:
             2,
             GL_FLOAT,
             GL_FALSE,
-            5 * 4,
+            8 * 4,
             ctypes.c_void_p(12)
         )
         glEnableVertexAttribArray(1)
+        glVertexAttribPointer(
+            2,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            8 * 4,
+            ctypes.c_void_p(20)
+        )
+        glEnableVertexAttribArray(2)
+        glEnableVertexAttribArray(2)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
     def rebuild(self):

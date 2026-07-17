@@ -5,6 +5,7 @@ import terraimmerse.client.blaze3d.world.Chunk as ClientChunk
 import terraimmerse.client.blaze3d.Shader as Shader
 import glm
 import math
+import time
 
 from terraimmerse.client.Textures import load_texture
 from terraimmerse.world.entity.PlayerEntity import PlayerEntity
@@ -30,13 +31,12 @@ class TerraImmerse:
         self.loc_model = glGetUniformLocation(self.shader, "model")
         self.loc_view = glGetUniformLocation(self.shader, "view")
         self.loc_proj = glGetUniformLocation(self.shader, "projection")
-        self.loc_dayl = glGetUniformLocation(self.shader, "daylight")
+        self.loc_lightAngle = glGetUniformLocation(self.shader, "lightAngle")
         self.sky_vao = glGenVertexArrays(1)
         self.texture = load_texture("assets/textures/atlas.png")
         self.tex_loc = glGetUniformLocation(self.shader, "tex")
         self.model = glm.mat4(1.0)
         self.daylight=1.0
-        self.time_direction=-0.1
         self.view = glm.lookAt(
             glm.vec3(0, 0, 3),
             glm.vec3(0, 0, 0),
@@ -58,19 +58,25 @@ class TerraImmerse:
                     self.stop()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                     ClientChunk.rebuild()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_F2:
+                    self.takeScreenshot()
             self.drawScene()
     def getInstance(self):
         return self
     def stop(self):
         self.running=False
     def tickLight(self):
-        """if self.daylight<=0.1:
-            self.time_direction=0.001
-        elif self.daylight>=1.0:
-            self.time_direction=-0.001
-        self.daylight+=self.time_direction"""
-        pass
+        if self.daylight >= 360:
+            self.daylight=0
+        self.daylight+=1
+    def calculateSunPos(self):
+        self.lightAngle = self.daylight * (math.pi / 180.0)
+        self.radius = 15.0
+        self.lightX = self.radius * math.cos(self.lightAngle)
+        self.lightY = self.radius * math.sin(self.lightAngle)
+        self.lightZ = 0.0
     def drawScene(self):
+        self.calculateSunPos()
         self.tickLight()
         self.checkMovement()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -78,12 +84,12 @@ class TerraImmerse:
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, self.texture)
         glUniform1i(self.tex_loc, 0)
-        glUniform1f(self.loc_dayl, self.daylight)
+        glUniform1f(self.loc_lightAngle, self.lightAngle)
         glUniformMatrix4fv(self.loc_model, 1, GL_FALSE, glm.value_ptr(self.model))
         glUniformMatrix4fv(self.loc_view, 1, GL_FALSE, glm.value_ptr(self.view))
         glUniformMatrix4fv(self.loc_proj, 1, GL_FALSE, glm.value_ptr(self.projection))
         glBindVertexArray(self.clientChunk.getVao())
-        glDrawArrays(GL_TRIANGLES, 0, int(len(self.clientChunk.getVertices())/5))
+        glDrawArrays(GL_TRIANGLES, 0, int(len(self.clientChunk.getVertices())/8))
         glBindVertexArray(0)
         pygame.display.flip()
     def checkMovement(self):
@@ -128,3 +134,11 @@ class TerraImmerse:
             self.player.getPos() + self.direction,
             glm.vec3(0, 1, 0)
         )
+    def takeScreenshot(self):
+        z = time.localtime()
+        filename = f"{z.tm_year}-{z.tm_mon}-{z.tm_mday}_{z.tm_hour}-{z.tm_min}-{z.tm_sec}.png"
+        data = glReadPixels(0, 0, self.width, self.height, GL_RGB, GL_UNSIGNED_BYTE)
+        image = pygame.image.fromstring(data, (self.width, self.height), "RGB")
+        image = pygame.transform.flip(image, False, True)
+        os.makedirs("screenshots", exist_ok=True)
+        pygame.image.save(image, "screenshots/"+filename+".png")
