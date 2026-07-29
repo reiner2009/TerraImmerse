@@ -12,11 +12,11 @@ out vec3 lightPos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform float lightAngle;
+float lightAngle = 0;
 
 void main() {
-    float radius = 50.0;
-    lightPos = vec3(radius * cos(lightAngle), radius * sin(lightAngle), 0.0);
+    float radius = 5000.0;
+    lightPos = vec3(0.0, radius * sin(lightAngle), radius * cos(lightAngle+180));
     fragPos = vec3(model * vec4(aPos, 1.0));
     normal = mat3(transpose(inverse(model))) * aNormal;
     uv = aUV;

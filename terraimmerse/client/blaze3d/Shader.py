@@ -8,10 +8,10 @@ class ShaderError(Exception):
     pass
 
 class ShaderCompiler:
-    def __init__(self):
-        with open(get_resource_path("assets/shader/vertex.glsl"), "r") as f:
+    def __init__(self, vertex_path, fragment_path):
+        with open(get_resource_path(vertex_path), "r") as f:
             self.src_vertex = f.read()
-        with open(get_resource_path("assets/shader/fragment.glsl"), "r") as f:
+        with open(get_resource_path(fragment_path), "r") as f:
             self.src_fragment = f.read()
     def compile_shader(self, source, shader_type):
         self.shader = glCreateShader(shader_type)
