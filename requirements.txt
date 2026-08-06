@@ -1,7 +1,0 @@
-PyOpenGL
-PyInstaller
-pygame
-numpy
-PyGlm
-opensimplex
-screeninfo
