@@ -41,11 +41,6 @@ shadowJar {
     archiveBaseName = "TerraImmerse-Pi"
     archiveVersion = version
     archiveClassifier = ""
-
-    exclude("**/*.so")
-    exclude("**/*.dll")
-    exclude("**/*.dylib")
-
     manifest {
         attributes(
             'Main-Class': application.mainClass.get()
@@ -116,7 +111,6 @@ tasks.register("downloadAllNatives") {
 
             def outputDir = file("$outputRoot/$platformName")
 
-            // Alte Dateien/Struktur dieser Plattform löschen
             delete outputDir
 
             outputDir.mkdirs()
@@ -146,7 +140,6 @@ tasks.register("downloadAllNatives") {
                     include "**/liblwjgl_stb.dylib"
                     include "**/libglfw.dylib"
 
-                    // Dateien direkt in den Plattformordner
                     eachFile {
                         path = name
                     }

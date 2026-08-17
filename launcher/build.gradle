@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.terraimmerse'
-version = '1.0-Pi'
+version = '1.0'
 
 application {
     mainClass = 'com.trhein.TerraImmerseLauncher.Launcher'
@@ -15,10 +15,6 @@ repositories {
     mavenCentral()
 }
 
-project.ext.lwjglVersion = "3.4.2"
-project.ext.lwjglNatives = "natives-linux-arm32"
-project.ext.jomlVersion = "1.10.9"
-
 dependencies {
 }
 
@@ -26,8 +22,6 @@ shadowJar {
     archiveBaseName = "TerraImmerse-Launcher"
     archiveVersion = version
     archiveClassifier = ""
-
-    // Natives NICHT in die JAR packen
     exclude("**/*.so")
     exclude("**/*.dll")
     exclude("**/*.dylib")

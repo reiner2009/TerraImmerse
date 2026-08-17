@@ -21,7 +21,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Box;
@@ -53,6 +52,7 @@ public class Launcher {
    private final JLabel statusLabel;
    private final JProgressBar progressBar;
    private List<Release> releases = new ArrayList<>();
+
    public Launcher() {
       this.frame.setDefaultCloseOperation(3);
       this.frame.setSize(700, 500);
@@ -140,6 +140,7 @@ public class Launcher {
       this.frame.setVisible(true);
       this.loadReleases();
    }
+
    private void loadReleases() {
       (new Thread(() -> {
          try {
@@ -170,6 +171,7 @@ public class Launcher {
          }
       })).start();
    }
+
    private List<Release> parseReleases(String json) {
       List<Release> result = new ArrayList<>();
       Pattern objectPattern = Pattern.compile("\\{(.*?)\\}", 32);
@@ -189,33 +191,36 @@ public class Launcher {
       }
       return result;
    }
+
    private String getJsonValue(String json, String key) {
       Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*\"([^\"]*)\"");
       Matcher matcher = pattern.matcher(json);
       return matcher.find() ? matcher.group(1) : null;
    }
+
    private String getJsonBooleanValue(String json, String key) {
       Pattern pattern = Pattern.compile("\"" + Pattern.quote(key) + "\"\\s*:\\s*(true|false)");
       Matcher matcher = pattern.matcher(json);
       return matcher.find() ? matcher.group(1) : null;
    }
+
    private void launchGame() {
       Release release = (Release)this.versionBox.getSelectedItem();
       if (release != null) {
-        if (!release.stable) {
-           int choice = JOptionPane.showConfirmDialog(
-              this.frame,
-              "Warning: This is an unstable development/test release (" + release.displayName + ").\n" +
-              "You may encounter bugs, crashes, or unexpected behavior.\n\n" +
-              "Do you want to proceed anyway?",
-              "Unstable Release Warning",
-              JOptionPane.YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE
-           );
-           if (choice != JOptionPane.YES_OPTION) {
-              return; // User cancelled
-           }
-        }
+         if (!release.stable) {
+            int choice = JOptionPane.showConfirmDialog(
+               this.frame,
+               "Warning: This is an unstable development/test release (" + release.displayName + ").\n" +
+               "You may encounter bugs, crashes, or unexpected behavior.\n\n" +
+               "Do you want to proceed anyway?",
+               "Unstable Release Warning",
+               JOptionPane.YES_NO_OPTION,
+               JOptionPane.WARNING_MESSAGE
+            );
+            if (choice != JOptionPane.YES_OPTION) {
+               return;
+            }
+         }
          boolean pi = this.piEdition.isSelected();
          String jarPath = pi ? release.piEdition : release.fullEdition;
          (new Thread(() -> {
@@ -232,17 +237,20 @@ public class Launcher {
                } else {
                   this.setStatus("Game executable ready.");
                }
+
                String platform = this.detectPlatform();
                Path nativeDirectory = NATIVES_DIRECTORY.resolve(platform);
                Files.createDirectories(nativeDirectory);
                String[] nativeFiles = this.getNativeFiles(platform);
+
                for(String nativeFile : nativeFiles) {
                   Path target = nativeDirectory.resolve(nativeFile);
-                  String url = BASE_URL + "libs/lwjgl/natives/" + platform + "/natives/" + nativeFile;
+                  String url = BASE_URL + "libs/lwjgl/natives/" + platform + "/" + nativeFile;
                   if (!Files.exists(target)) {
                      this.download(url, target);
                   }
                }
+
                this.setStatus("Starting TerraImmerse...");
                this.startGame(jar, nativeDirectory);
                JFrame var10000 = this.frame;
@@ -258,6 +266,7 @@ public class Launcher {
          })).start();
       }
    }
+
    private void download(String url, Path target) throws Exception {
       this.setStatus("Downloading " + String.valueOf(target.getFileName()));
       HttpClient client = HttpClient.newHttpClient();
@@ -268,43 +277,17 @@ public class Launcher {
          throw new IOException("Download failed: HTTP " + var10002 + "\n" + url);
       } else {
          Files.createDirectories(target.getParent());
-         InputStream input = (InputStream)response.body();
-         try {
-            OutputStream output = Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            try {
-               byte[] buffer = new byte[8192];
-               int read;
-               while((read = input.read(buffer)) != -1) {
-                  output.write(buffer, 0, read);
-               }
-            } catch (Throwable var12) {
-               if (output != null) {
-                  try {
-                     output.close();
-                  } catch (Throwable var11) {
-                     var12.addSuppressed(var11);
-                  }
-               }
-               throw var12;
+         try (InputStream input = response.body();
+              OutputStream output = Files.newOutputStream(target, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while((read = input.read(buffer)) != -1) {
+               output.write(buffer, 0, read);
             }
-            if (output != null) {
-               output.close();
-            }
-         } catch (Throwable var13) {
-            if (input != null) {
-               try {
-                  input.close();
-               } catch (Throwable var10) {
-                  var13.addSuppressed(var10);
-               }
-            }
-            throw var13;
-         }
-         if (input != null) {
-            input.close();
          }
       }
    }
+
    private String detectPlatform() {
       String os = System.getProperty("os.name").toLowerCase();
       String arch = System.getProperty("os.arch").toLowerCase();
@@ -334,34 +317,38 @@ public class Launcher {
          throw new RuntimeException("Unsupported operating system: " + os + " / " + arch);
       }
    }
+
    private String[] getNativeFiles(String platform) {
       if (platform.startsWith("windows")) {
          return new String[]{"glfw.dll", "lwjgl.dll", "lwjgl_opengl.dll", "lwjgl_stb.dll"};
+      } else if (platform.startsWith("macos")) {
+         return new String[]{"libglfw.dylib", "liblwjgl.dylib", "liblwjgl_opengl.dylib", "liblwjgl_stb.dylib"};
       } else {
-         return platform.startsWith("macos") ? new String[]{"libglfw.dylib", "liblwjgl.dylib", "liblwjgl_opengl.dylib", "liblwjgl_stb.dylib"} : new String[]{"libglfw.so", "liblwjgl.so", "liblwjgl_opengl.so", "liblwjgl_stb.so"};
+         return new String[]{"libglfw.so", "liblwjgl.so", "liblwjgl_opengl.so", "liblwjgl_stb.so"};
       }
    }
+
    private void startGame(Path jar, Path natives) throws Exception {
-       List<String> command = new ArrayList<>();
-       command.add(this.findJava());
+      List<String> command = new ArrayList<>();
+      command.add(this.findJava());
 
-       // Flag für neuere Java-Versionen (Java 21+), um Native Access zu erlauben
-       command.add("--enable-native-access=ALL-UNNAMED");
+      command.add("--enable-native-access=ALL-UNNAMED");
 
-       // macOS First-Thread Argument
-       if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-           command.add("-XstartOnFirstThread");
-       }
+      if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+         command.add("-XstartOnFirstThread");
+      }
 
-       // Absoluten Pfad explizit als String übergeben
-       command.add("-Djava.library.path=" + natives.toAbsolutePath().toString());
-       command.add("-jar");
-       command.add(jar.toAbsolutePath().toString());
+      String nativePath = natives.toAbsolutePath().toString();
+      command.add("-Djava.library.path=" + nativePath);
+      command.add("-Dorg.lwjgl.librarypath=" + nativePath);
 
-       ProcessBuilder builder = new ProcessBuilder(command);
-       builder.directory(GAME_DIRECTORY.toFile());
-       builder.inheritIO();
-       builder.start();
+      command.add("-jar");
+      command.add(jar.toAbsolutePath().toString());
+
+      ProcessBuilder builder = new ProcessBuilder(command);
+      builder.directory(GAME_DIRECTORY.toFile());
+      builder.inheritIO();
+      builder.start();
    }
 
    private String findJava() {
@@ -369,9 +356,11 @@ public class Launcher {
       Path java = Paths.get(javaHome, "bin", this.isWindows() ? "java.exe" : "java");
       return java.toString();
    }
+
    private boolean isWindows() {
       return System.getProperty("os.name").toLowerCase().contains("win");
    }
+
    private void setStatus(String text) {
       SwingUtilities.invokeLater(() -> this.statusLabel.setText(text));
    }
@@ -379,10 +368,12 @@ public class Launcher {
    public static void main(String[] args) {
       SwingUtilities.invokeLater(Launcher::new);
    }
+
    static {
       VERSIONS_DIRECTORY = GAME_DIRECTORY.resolve("versions");
       NATIVES_DIRECTORY = GAME_DIRECTORY.resolve("natives");
    }
+
    private static class Release {
       final String phase;
       final String version;
@@ -390,6 +381,7 @@ public class Launcher {
       final String fullEdition;
       final String piEdition;
       final boolean stable;
+
       Release(String phase, String version, String displayName, String fullEdition, String piEdition, boolean stable) {
          this.phase = phase;
          this.version = version;
@@ -398,6 +390,7 @@ public class Launcher {
          this.piEdition = piEdition;
          this.stable = stable;
       }
+
       public String toString() {
          return this.displayName;
       }

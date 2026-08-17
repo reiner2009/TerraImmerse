@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.terraimmerse'
-version = 'classic-1.0'
+version = 'classic-0.1.0'
 
 application {
     mainClass = 'net.terraimmerse.client.TerraImmerse'
@@ -140,10 +140,6 @@ shadowJar {
     archiveBaseName = "TerraImmerse"
     archiveVersion = version
     archiveClassifier = ""
-    exclude("**/*.so")
-    exclude("**/*.dll")
-    exclude("**/*.dylib")
-
     manifest {
         attributes(
             'Main-Class': application.mainClass.get()
