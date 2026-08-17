@@ -1,5 +1,8 @@
 package net.terraimmerse.client;
 
+import java.io.File;
+import java.net.URISyntaxException;
+
 import net.terraimmerse.client.blaze3d.ShaderCompiler;
 import net.terraimmerse.client.blaze3d.TextureLoader;
 import net.terraimmerse.client.blaze3d.sky.SunVBO;
@@ -36,6 +39,8 @@ public class TerraImmerse {
     private static int sunLocModel;
     private static int sunLocView;
     private static int sunLocProj;
+    private static int sunLocTexture;
+    private static int sunLocColor;
     private static SunVBO sunVBO;
     private static int atlasTexture;
     private static int textureLoc;
@@ -60,6 +65,9 @@ public class TerraImmerse {
     private static float yaw;
     private static float pitch;
     private static Vector3f direction;
+    private static float sunR;
+    private static float sunG;
+    private static float sunB;
     private static float move_x;
     private static float move_z;
     private static float move_y;
@@ -69,14 +77,17 @@ public class TerraImmerse {
     private static float dz_side;
     private static float lightAngle;
     private static int radius;
-    public static void init(){  GLFW.glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err) ); 
+    public static void init(){  
+        setupLWJGLNatives();
+        GLFW.glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err) ); 
+        System.setProperty("org.lwjgl.librarypath", new File("natives").getAbsolutePath());
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Falied to load GLFW");
         }
         long monitor = GLFW.glfwGetPrimaryMonitor();
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
-GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
         width=videoMode.width();
         height=videoMode.height();
         window = GLFW.glfwCreateWindow(
@@ -115,6 +126,8 @@ GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
         sunLocModel= GL20.glGetUniformLocation(sunShader, "model");
         sunLocView = GL20.glGetUniformLocation(sunShader, "view");
         sunLocProj = GL20.glGetUniformLocation(sunShader, "projection");
+        sunLocTexture=GL20.glGetUniformLocation(sunShader,"sunTexture");
+        sunLocColor=GL20.glGetUniformLocation(sunShader,"sunColor");
         sunVBO=new SunVBO();
         atlasTexture=TextureLoader.loadTexture("/assets/textures/atlas.png");
         textureLoc=GL20.glGetUniformLocation(shader, "tex");
@@ -132,6 +145,28 @@ GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
         speed=0.1F;
         brightness=0.0F;
         radius=10;
+        sunR=0;
+        sunG=0;
+        sunB=0;
+    }
+    private static void setupLWJGLNatives() {
+        try {
+            var location = TerraImmerse.class.getProtectionDomain().getCodeSource().getLocation();
+            File file = new File(location.toURI());
+            if (!file.isFile() || !file.getName().endsWith(".jar")) {
+                System.out.println("Development mode - using Gradle LWJGL natives.");
+                return;
+            }
+            File jarDirectory = file.getParentFile();
+            File nativesDirectory = new File(jarDirectory,"natives");
+            if (!nativesDirectory.isDirectory()) {
+                throw new RuntimeException("Natives directory not found:\n"+ nativesDirectory.getAbsolutePath());
+            }
+            System.setProperty("org.lwjgl.librarypath",nativesDirectory.getAbsolutePath());
+            System.out.println("Production mode - LWJGL natives: "+ nativesDirectory.getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException("Could not configure LWJGL natives", e);
+        }
     }
     public void run() {
         init();
@@ -156,6 +191,7 @@ GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
         }
         sunAngle+=0.1F;
         lightAngle=(float) Math.toRadians(sunAngle);
+        calculateSunColor(sunAngle);
     }
     private static void handleInput(){
         double[] xpos = new double[1];
@@ -229,11 +265,11 @@ GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
             GL20.glUniformMatrix4fv(sunLocView, false, sunView.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(sunLocProj, false, projection.get(stack.mallocFloat(16)));
         }
-        GL20.glUniform3f(GL20.glGetUniformLocation(sunShader,"sunColor"),1.0F,0.9F,0.5F);
         GL20.glUniform1f(GL20.glGetUniformLocation(sunShader,"brightness"),2.0F);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, sunVBO.getSunTexture());
-        GL20.glUniform1i(GL20.glGetUniformLocation(sunShader,"sunTexture"),0);
+        GL20.glUniform1i(sunLocTexture,0);
+        GL20.glUniform3f(sunLocColor,sunR,sunG,sunB);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, sunVBO.getVbo());
         GL20.glEnableVertexAttribArray(0);
         GL20.glVertexAttribPointer(0,3,GL11.GL_FLOAT,false,5 * Float.BYTES,0L);
@@ -301,5 +337,54 @@ GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
             return bright - t * (bright - dark);
         }
         return dark;
+    }
+    private static float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+    }
+    private static float smoothstep(float t) {
+        return t * t * (3.0F - 2.0F * t);
+    }
+    public static void calculateSunColor(float w) {
+        float r;
+        float g;
+        float b;
+        if (w < 20.0F) {
+            float t = smoothstep(w / 20.0F);
+            r = lerp(1.0F, 1.0F, t);
+            g = lerp(0.25F, 0.70F, t);
+            b = lerp(0.05F, 0.30F, t);
+        }
+        else if (w < 70.0F) {
+            float t = smoothstep((w - 20.0F) / 50.0F);
+            r = lerp(1.0F, 1.0F, t);
+            g = lerp(0.70F, 0.88F, t);
+            b = lerp(0.30F, 0.60F, t);
+        }
+        else if (w < 110.0F) {
+            float t = smoothstep((w - 70.0F) / 40.0F);
+            r = lerp(1.0F, 1.0F, t);
+            g = lerp(0.88F, 0.98F, t);
+            b = lerp(0.60F, 0.75F, t);
+        }
+        else if (w < 155.0F) {
+            float t = smoothstep((w - 110.0F) / 45.0F);
+            r = lerp(1.0F, 1.0F, t);
+            g = lerp(0.98F, 0.78F, t);
+            b = lerp(0.75F, 0.45F, t);
+        }
+        else if (w < 190.0F) {
+            float t = smoothstep((w - 155.0F) / 25.0F);
+            r = lerp(1.0F, 1.0F, t);
+            g = lerp(0.78F, 0.32F, t);
+            b = lerp(0.45F, 0.08F, t);
+        }
+        else {
+            r = 1.0F;
+            g = 1.0F;
+            b = 1.0F;
+        }
+        sunR = r;
+        sunG = g;
+        sunB = b;
     }
 }

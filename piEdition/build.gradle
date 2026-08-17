@@ -5,26 +5,21 @@ plugins {
 }
 
 group = 'net.terraimmerse'
-version = '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-    maven {
-        url = 'https://jitpack.io'
-    }
-}
+version = '1.0-Pi'
 
 application {
     mainClass = 'net.terraimmerse.client.TerraImmerse'
 }
 
-project.ext.lwjglVersion = '3.4.2'
-project.ext.jomlVersion = '1.10.9'
-project.ext.lwjglNatives = 'natives-linux-arm32'
+repositories {
+    mavenCentral()
+}
+
+project.ext.lwjglVersion = "3.4.2"
+project.ext.lwjglNatives = "natives-linux-arm32"
+project.ext.jomlVersion = "1.10.9"
 
 dependencies {
-
-    // LWJGL
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
@@ -32,58 +27,150 @@ dependencies {
     implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
 
-    // Raspberry Pi 3 ARM32 Natives
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    implementation "org.lwjgl:lwjgl-stb::$lwjglNatives"
 
-    // Libraries
     implementation "org.joml:joml:$jomlVersion"
     implementation "com.google.code.gson:gson:2.13.1"
     implementation "com.raylabz:opensimplex:1.0.3"
-
-    // Tests
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
 }
-
-test {
-    useJUnitPlatform()
-}
-
-// ==========================================
-// Normale JAR
-// ==========================================
-
-jar {
-    manifest {
-        attributes(
-            'Main-Class': 'net.terraimmerse.client.TerraImmerse'
-        )
-    }
-}
-
-// ==========================================
-// Fat JAR / Uber JAR
-// ==========================================
 
 shadowJar {
+    archiveBaseName = "TerraImmerse-Pi"
+    archiveVersion = version
+    archiveClassifier = ""
 
-    archiveBaseName = 'TerraImmerse'
-    archiveVersion = project.version
-    archiveClassifier = 'all'
+    // Natives NICHT in die JAR packen
+    exclude("**/*.so")
+    exclude("**/*.dll")
+    exclude("**/*.dylib")
 
     manifest {
         attributes(
-            'Main-Class': 'net.terraimmerse.client.TerraImmerse'
+            'Main-Class': application.mainClass.get()
         )
     }
+}
 
-    // Signaturdateien aus Dependencies entfernen
-    exclude 'META-INF/*.SF'
-    exclude 'META-INF/*.DSA'
-    exclude 'META-INF/*.RSA'
+def lwjglVersion = "3.4.2"
 
-    // Service-Dateien zusammenführen
-    mergeServiceFiles()
+def nativeModules = [
+    "lwjgl",
+    "lwjgl-glfw",
+    "lwjgl-opengl",
+    "lwjgl-stb"
+]
+
+def nativePlatforms = [
+    "linux-x64": "natives-linux",
+    "linux-arm64": "natives-linux-arm64",
+    "linux-arm32": "natives-linux-arm32",
+    "linux-ppc64le": "natives-linux-ppc64le",
+    "linux-riscv64": "natives-linux-riscv64",
+
+    "macos-x64": "natives-macos",
+    "macos-arm64": "natives-macos-arm64",
+
+    "windows-x64": "natives-windows",
+    "windows-x86": "natives-windows-x86",
+    "windows-arm64": "natives-windows-arm64"
+]
+
+def nativeConfigurations = [:]
+
+nativePlatforms.each { platformName, nativeClassifier ->
+
+    def configurationName =
+            "terraImmerse_${platformName.replaceAll("-", "_")}"
+
+    nativeConfigurations[platformName] = configurations.create(configurationName)
+
+    nativeModules.each { module ->
+
+        dependencies.add(
+            configurationName,
+            "org.lwjgl:${module}:${lwjglVersion}:${nativeClassifier}"
+        )
+    }
+}
+
+
+tasks.register("downloadAllNatives") {
+
+    group = "terraimmerse"
+    description = "Downloads only the required LWJGL native libraries."
+
+    doLast {
+
+        def outputRoot = file("$projectDir/natives")
+
+        println ""
+        println "=============================================="
+        println " TerraImmerse - LWJGL Native Downloader"
+        println " LWJGL version: $lwjglVersion"
+        println "=============================================="
+        println ""
+
+        nativeConfigurations.each { platformName, configuration ->
+
+            def outputDir = file("$outputRoot/$platformName")
+
+            // Alte Dateien/Struktur dieser Plattform löschen
+            delete outputDir
+
+            outputDir.mkdirs()
+
+            println "Platform: $platformName"
+
+            configuration.resolve().each { nativeJar ->
+
+                println "  Reading: ${nativeJar.name}"
+
+                copy {
+                    from zipTree(nativeJar)
+
+                    // NUR die tatsächlich benötigten Libraries
+                    include "**/liblwjgl.so"
+                    include "**/liblwjgl_opengl.so"
+                    include "**/liblwjgl_stb.so"
+                    include "**/libglfw.so"
+
+                    include "**/lwjgl.dll"
+                    include "**/lwjgl_opengl.dll"
+                    include "**/lwjgl_stb.dll"
+                    include "**/glfw.dll"
+
+                    include "**/liblwjgl.dylib"
+                    include "**/liblwjgl_opengl.dylib"
+                    include "**/liblwjgl_stb.dylib"
+                    include "**/libglfw.dylib"
+
+                    // Dateien direkt in den Plattformordner
+                    eachFile {
+                        path = name
+                    }
+
+                    includeEmptyDirs = false
+                    into outputDir
+                }
+            }
+
+            println ""
+            println "  Result:"
+
+            outputDir.listFiles()?.each {
+                println "    ${it.name}"
+            }
+
+            println ""
+        }
+
+        println "=============================================="
+        println " All LWJGL natives downloaded!"
+        println " Location:"
+        println " $outputRoot"
+        println "=============================================="
+    }
 }

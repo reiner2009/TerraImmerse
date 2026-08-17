@@ -8,9 +8,5 @@ uniform float brightness;
 
 void main() {
     vec4 texColor = texture2D(sunTexture, vTexCoord);
-
-    gl_FragColor = vec4(
-        sunColor * texColor.rgb * brightness,
-        texColor.a
-    );
+    gl_FragColor = vec4(sunColor * texColor.rgb * brightness,texColor.a);
 }

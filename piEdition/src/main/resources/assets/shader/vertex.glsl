@@ -16,18 +16,9 @@ uniform float lightAngle;
 
 void main() {
     float radius = 5000.0;
-
-    lightPos = vec3(
-        0.0,
-        radius * sin(lightAngle),
-        radius * cos(lightAngle + 3.14159265)
-    );
-
+    lightPos = vec3(0.0,radius * sin(lightAngle),radius * cos(lightAngle + 3.14159265));
     fragPos = vec3(model * vec4(aPos, 1.0));
-
     normal = aNormal;
-
     uv = aUV;
-
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

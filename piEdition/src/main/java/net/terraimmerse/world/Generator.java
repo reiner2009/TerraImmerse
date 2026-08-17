@@ -10,10 +10,10 @@ public class Generator {
     private static int size;
     private static OpenSimplexNoise noise;
     public double getHeight(int x, int z){
-        double n1 = noise.getNoise2D(x*0.1F, z*0.1F).getValue()*30+30;
-        double n2 = noise.getNoise2D(x*0.7F, z*0.7F).getValue()*40+40;
-        double n3 = noise.getNoise2D(x*1, z*1).getValue()*45+40;
-        return n1+n2+n3;
+        double n1 = noise.getNoise2D(x * 0.1F, z * 0.1F).getValue() * 30 + 30;
+        double n2 = noise.getNoise2D(x * 0.4F, z * 0.4F).getValue() * 8 + 4;
+        double n3 = noise.getNoise2D(x * 1.6F, z * 1.6F).getValue() * 1.5;
+        return n1 + n2 + n3;
     }
     public Generator(Chunk chunk){
         size=100;

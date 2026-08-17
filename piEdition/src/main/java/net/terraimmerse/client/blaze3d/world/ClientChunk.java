@@ -3,10 +3,7 @@ package net.terraimmerse.client.blaze3d.world;
 import net.terraimmerse.client.TerraImmerse;
 import net.terraimmerse.core.MaterialPos;
 import net.terraimmerse.world.chunk.Chunk;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;
 import java.util.Map;
