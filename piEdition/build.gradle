@@ -42,7 +42,6 @@ shadowJar {
     archiveVersion = version
     archiveClassifier = ""
 
-    // Natives NICHT in die JAR packen
     exclude("**/*.so")
     exclude("**/*.dll")
     exclude("**/*.dylib")
