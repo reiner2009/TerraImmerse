@@ -338,7 +338,7 @@ public class TerraImmerse {
         return dark;
     }
     private static float lerp(float a, float b, float t) {
-    return a + (b - a) * t;
+        return a + (b - a) * t;
     }
     private static float smoothstep(float t) {
         return t * t * (3.0F - 2.0F * t);
