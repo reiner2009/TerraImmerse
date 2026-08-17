@@ -78,7 +78,6 @@ public class TerraImmerse {
     private static float lightAngle;
     private static int radius;
     public static void init(){  
-        setupLWJGLNatives();
         GLFW.glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err) ); 
         System.setProperty("org.lwjgl.librarypath", new File("natives").getAbsolutePath());
         if (!GLFW.glfwInit()) {
