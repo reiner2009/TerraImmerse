@@ -74,6 +74,7 @@ public class TerraImmerse {
     private static float dz_side;
     private static float lightAngle;
     private static int radius;
+    public static int worldSize;
     public static void init() {
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Falied to load GLFW");
@@ -107,7 +108,7 @@ public class TerraImmerse {
         GLFW.glfwShowWindow(window);
         textureManager=new TextureManager();
         chunk=new Chunk(0,0);
-        worldGenerator = new Generator(chunk);
+        worldGenerator = new Generator(chunk, worldSize);
         playerEntity = new PlayerEntity();
         clientChunk = new ClientChunk(chunk);
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl");
@@ -152,6 +153,20 @@ public class TerraImmerse {
         GLFW.glfwTerminate();
     }
     public static void main(String[] args){
+        worldSize = 256;
+        for (String arg : args) {
+            if (arg.startsWith("--worldSize=")) {
+                try {
+                    worldSize = Integer.parseInt(
+                            arg.substring("--worldSize=".length())
+                    );
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid World Size: " + arg);
+                    return;
+                }
+            }
+        }
+        System.out.println("World Size: " + worldSize);
         new TerraImmerse().run();
     }
     public static void loop() {
