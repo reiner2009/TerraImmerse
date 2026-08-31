@@ -2,11 +2,12 @@ package net.terraimmerse.client;
 
 import net.terraimmerse.client.blaze3d.ShaderCompiler;
 import net.terraimmerse.client.blaze3d.TextureLoader;
-import net.terraimmerse.client.blaze3d.sky.SunVBO;
+import net.terraimmerse.client.blaze3d.sky.SkyRenderer;
 import net.terraimmerse.client.blaze3d.world.ClientChunk;
 import net.terraimmerse.world.Generator;
 import net.terraimmerse.world.chunk.Chunk;
 import net.terraimmerse.world.entity.PlayerEntity;
+import net.terraimmerse.client.InputHandler;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -21,59 +22,24 @@ import org.lwjgl.system.MemoryStack;
 public class TerraImmerse {
     private static Chunk chunk;
     private static ClientChunk clientChunk;
-    private static PlayerEntity playerEntity;
+    public static PlayerEntity playerEntity;
     private static ShaderCompiler shaderCompiler;
-    private static ShaderCompiler sunShaderCompiler;
     private static Generator worldGenerator;
+    private static SkyRenderer skyRenderer;
     public static TextureManager textureManager;
-    private static int shader;
-    private static int sunShader;
+    public static int shader;
     private static int locModel;
     private static int locView;
     private static int locProj;
-    private static int locLightAngle;
-    private static int sunLocModel;
-    private static int sunLocView;
-    private static int sunLocProj;
-    private static int sunLocTexture;
-    private static int sunLocColor;
-    private static int sunLocBrightness;
-    private static SunVBO sunVBO;
     private static int atlasTexture;
     private static int textureLoc;
     private static Matrix4f model;
-    private static Matrix4f view;
-    private static Matrix4f projection;
-    private static Matrix4f sunModel;
-    private static Matrix4f sunView;
-    private static float sensity;
-    private static float speed;
-    private static float sunAngle;
-    private static float brightness;
-    private static float bright;
-    private static float dark;
-    private static float t;
-    private static long window;
+    public static Matrix4f view;
+    public static Matrix4f projection;
+    public static long window;
     private static int width;
     private static int height;
-    private static double lastX;
-    private static double lastY;
-    private static boolean firstMouse = true;
-    private static float yaw;
-    private static float pitch;
-    private static Vector3f direction;
-    private static float sunR;
-    private static float sunG;
-    private static float sunB;
-    private static float move_x;
-    private static float move_z;
-    private static float move_y;
-    private static float dx;
-    private static float dz;
-    private static float dx_side;
-    private static float dz_side;
-    private static float lightAngle;
-    private static int radius;
+    public static Vector3f direction;
     public static void init() {
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Falied to load GLFW");
@@ -111,23 +77,11 @@ public class TerraImmerse {
         playerEntity = new PlayerEntity();
         clientChunk = new ClientChunk(chunk);
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl");
-        sunShaderCompiler=new ShaderCompiler("/assets/shader/sun.vert", "/assets/shader/sun.frag");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
-        sunShader=sunShaderCompiler.createShaderProgram(sunShaderCompiler.vertexShaderSrc, sunShaderCompiler.fragmentShaderSrc);
         locModel= GL20.glGetUniformLocation(shader, "model");
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
-        locLightAngle=GL20.glGetUniformLocation(shader, "lightAngle");
-        sunLocModel= GL20.glGetUniformLocation(sunShader, "model");
-        sunLocView = GL20.glGetUniformLocation(sunShader, "view");
-        sunLocProj = GL20.glGetUniformLocation(sunShader, "projection");
-        sunLocTexture = GL20.glGetUniformLocation(sunShader, "sunTexture");
-        sunLocColor = GL20.glGetUniformLocation(sunShader, "sunColor");
-        sunLocBrightness = GL20.glGetUniformLocation(sunShader, "brightness");
-        sunR=1.0F;
-        sunG=1.0F;
-        sunB=1.0F;
-        sunVBO=new SunVBO();
+        skyRenderer=new SkyRenderer();
         atlasTexture=TextureLoader.loadTexture("/assets/textures/atlas.png");
         textureLoc=GL20.glGetUniformLocation(shader, "tex");
         model = new Matrix4f();
@@ -140,10 +94,8 @@ public class TerraImmerse {
         );
         projection = new Matrix4f();
         projection.identity().perspective((float)Math.toRadians(45), (float) width/(float) height, 0.1F, 2000.0F);
-        sensity=0.002F;
-        speed=0.1F;
-        brightness=0.0F;
-        radius=10;
+        InputHandler.init();
+        skyRenderer.init();
     }
     public void run() {
         init();
@@ -157,120 +109,19 @@ public class TerraImmerse {
     public static void loop() {
         while (!GLFW.glfwWindowShouldClose(window)) {
             GLFW.glfwPollEvents();
-            handleInput();
+            InputHandler.handleInput();
             drawScene();
             GLFW.glfwSwapBuffers(window);
         }
     }
-    private static void tickLight(){
-        if (sunAngle>=360.0F){
-            sunAngle=0.0F;
-        }
-        sunAngle+=0.1F;
-        lightAngle=(float) Math.toRadians(sunAngle);
-        calculateSunColor(sunAngle);
-    }
-    private static void handleInput(){
-        double[] xpos = new double[1];
-        double[] ypos = new double[1];
-        GLFW.glfwGetCursorPos(window, xpos, ypos);
-        if (firstMouse) {
-            lastX = xpos[0];
-            lastY = ypos[0];
-            firstMouse = false;
-        }
-        double deltaX = xpos[0] - lastX;
-        double deltaY = lastY - ypos[0];
-        lastX = xpos[0];
-        lastY = ypos[0];
-        playerEntity.yaw -= deltaX * sensity;
-        playerEntity.pitch += deltaY * sensity;
-        playerEntity.pitch=Math.max(-1.5F, Math.min(1.5F, playerEntity.pitch));
-        yaw = playerEntity.yaw;
-        pitch = playerEntity.pitch;
-        Vector3f front = new Vector3f();
-        front.x = (float)(Math.cos(pitch) * Math.sin(yaw));
-        front.y = (float)Math.sin(pitch);
-        front.z = (float)(Math.cos(pitch) * Math.cos(yaw));
-        front.normalize();
-        direction = new Vector3f(playerEntity.getPos()).add(front);
-        view.identity().lookAt(
-                playerEntity.getPos(),
-                direction,
-                new Vector3f(0, 1, 0)
-        );
-        move_x=0;
-        move_y=0;
-        move_z=0;
-        dx = (float) Math.sin(playerEntity.yaw);
-        dz = (float) Math.cos(playerEntity.yaw);
-        dx_side = (float) Math.sin(playerEntity.yaw-Math.toRadians(90));
-        dz_side = (float) Math.cos(playerEntity.yaw-Math.toRadians(90));
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS){
-            move_x += dx * speed;
-            move_z += dz * speed;
-        }
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS){
-            move_x -= dx * speed;
-            move_z -= dz * speed;
-        }
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS){
-            move_x -= dx_side * speed;
-            move_z -= dz_side * speed;
-        }
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS){
-            move_x += dx_side * speed;
-            move_z += dz_side * speed;
-        }
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS){
-            move_y+=speed;
-        }
-        if(GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS){
-            move_y-=speed;
-        }
-        playerEntity.move(move_x, move_y, move_z);
-    }
-    private static void calculateSunPos(){
-        sunModel = new Matrix4f().identity();
-        sunModel.rotate(lightAngle, new Vector3f(1, 0, 0));
-        sunModel.translate(0, 0, -radius);
-    }
-    private static void renderSun(){
-        GL20.glUseProgram(sunShader);
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            GL20.glUniformMatrix4fv(sunLocModel, false, sunModel.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(sunLocView, false, sunView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(sunLocProj, false, projection.get(stack.mallocFloat(16)));
-        }
-        GL20.glUniform1f(sunLocBrightness,2.0F);
-        GL20.glActiveTexture(GL20.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, sunVBO.getSunTexture());
-        GL20.glUniform1i(sunLocTexture,0);
-        GL20.glUniform3f(sunLocColor,sunR,sunG,sunB);
-        GL30.glBindVertexArray(sunVBO.getVao());
-        GL20.glDrawArrays(GL11.GL_TRIANGLES,0,6);
-        GL30.glBindVertexArray(0);
-    }
+    
     private static void drawScene(){
-        tickLight();
-        brightness=calculateLight(sunAngle);
-        GL11.glClearColor(0.2F*brightness, 0.4F*brightness, 0.8F*brightness, 1.0F);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
-        sunView=new Matrix4f(new Matrix3f(view));
-        calculateSunPos();
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        renderSun();
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(true);
+        skyRenderer.render();
         GL20.glUseProgram(shader);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlasTexture);
         GL20.glUniform1i(textureLoc, 0);
-        GL20.glUniform1f(locLightAngle, lightAngle);
+        GL20.glUniform1f(SkyRenderer.locLightAngle, SkyRenderer.lightAngle);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(locModel, false, model.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(locView, false, view.get(stack.mallocFloat(16)));
@@ -279,74 +130,5 @@ public class TerraImmerse {
         GL30.glBindVertexArray(clientChunk.getVao());
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int)clientChunk.getVertices().length / 8);
         GL30.glBindVertexArray(0);
-    }
-    public static float calculateLight(float w) {
-        dark = 0.1F;
-        bright = 1.0F;
-        if (w >= 370.0F){
-            t = (w - 370.0F) / (390.0F - 370.0F);
-            return dark + t * (bright - dark);
-        }
-        if (0.0F <= w && w <= 10.0F) {
-            t = w / 10.0F;
-            return dark + t * (bright - dark);
-        }
-        if (10.0F < w && w < 150.0F) {
-            return bright;
-        }
-        if (150.0F <= w && w <= 170.0F) {
-            t = (w - 150.0F) / (170.0F - 150.0F);
-            return bright - t * (bright - dark);
-        }
-        return dark;
-    }
-    private static float lerp(float a, float b, float t) {
-        return a + (b - a) * t;
-    }
-    private static float smoothstep(float t) {
-        return t * t * (3.0F - 2.0F * t);
-    }
-    public static void calculateSunColor(float w) {
-        float r;
-        float g;
-        float b;
-        if (w < 20.0F) {
-            float t = smoothstep(w / 20.0F);
-            r = lerp(1.0F, 1.0F, t);
-            g = lerp(0.25F, 0.70F, t);
-            b = lerp(0.05F, 0.30F, t);
-        }
-        else if (w < 70.0F) {
-            float t = smoothstep((w - 20.0F) / 50.0F);
-            r = lerp(1.0F, 1.0F, t);
-            g = lerp(0.70F, 0.88F, t);
-            b = lerp(0.30F, 0.60F, t);
-        }
-        else if (w < 110.0F) {
-            float t = smoothstep((w - 70.0F) / 40.0F);
-            r = lerp(1.0F, 1.0F, t);
-            g = lerp(0.88F, 0.98F, t);
-            b = lerp(0.60F, 0.75F, t);
-        }
-        else if (w < 155.0F) {
-            float t = smoothstep((w - 110.0F) / 45.0F);
-            r = lerp(1.0F, 1.0F, t);
-            g = lerp(0.98F, 0.78F, t);
-            b = lerp(0.75F, 0.45F, t);
-        }
-        else if (w < 190.0F) {
-            float t = smoothstep((w - 155.0F) / 25.0F);
-            r = lerp(1.0F, 1.0F, t);
-            g = lerp(0.78F, 0.32F, t);
-            b = lerp(0.45F, 0.08F, t);
-        }
-        else {
-            r = 1.0F;
-            g = 1.0F;
-            b = 1.0F;
-        }
-        sunR = r;
-        sunG = g;
-        sunB = b;
     }
 }
