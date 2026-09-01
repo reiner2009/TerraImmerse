@@ -1,5 +1,7 @@
 package net.terraimmerse.client.blaze3d.world;
 
+import net.terraimmerse.client.ClientInitializer;
+import net.terraimmerse.client.blaze3d.MaterialRenderLayerMap;
 import net.terraimmerse.world.chunk.Chunk;
 
 import java.util.ArrayList;
@@ -48,12 +50,10 @@ public class MaterialRenderer {
                 x, y, z+1, front_texture_tx, front_texture_ty+h, 0, 0, 1,
                 x+1, y, z+1, front_texture_tx+w, front_texture_ty+h, 0, 0, 1,
                 x, y+1, z+1, front_texture_tx, front_texture_ty, 0, 0, 1,
-
                 x+1, y, z+1, front_texture_tx+w, front_texture_ty+h, 0, 0, 1,
                 x+1, y+1, z+1, front_texture_tx+w, front_texture_ty, 0, 0, 1,
                 x, y+1, z+1, front_texture_tx, front_texture_ty, 0, 0, 1
         };
-
         float[] BACK = {
                 x+1, y, z, back_texture_tx, back_texture_ty+h, 0, 0, -1,
                 x, y, z, back_texture_tx+w, back_texture_ty+h, 0, 0, -1,
@@ -96,11 +96,16 @@ public class MaterialRenderer {
         };
         ArrayList<Float> vertices = new ArrayList<>();
         for (int i = 0; i < faces.length; i++) {
-            if ("air".equals(chunk.getMaterial(
+            String neighborMaterial = chunk.getMaterial(
                     x + neighbors[i][0],
                     y + neighbors[i][1],
                     z + neighbors[i][2]
-            ))) {
+            );
+
+            if ("air".equals(neighborMaterial)
+                    || MaterialRenderLayerMap.CUTOUT.equals(
+                    ClientInitializer.materialRenderLayerMapRegistry.get(neighborMaterial)
+            )) {
                 for (float v : faces[i]) {
                     vertices.add(v);
                 }
