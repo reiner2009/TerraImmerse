@@ -1,0 +1,5 @@
+rootProject.name = 'TerraImmerse'
+
+include 'piEdition'
+include 'fullEdition'
+include 'launcher'

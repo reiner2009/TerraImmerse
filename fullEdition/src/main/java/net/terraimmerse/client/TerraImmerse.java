@@ -5,10 +5,9 @@ import net.terraimmerse.client.blaze3d.TextureLoader;
 import net.terraimmerse.client.blaze3d.sky.SkyRenderer;
 import net.terraimmerse.client.blaze3d.world.ClientChunk;
 import net.terraimmerse.world.Generator;
+import net.terraimmerse.world.ServerTickThread;
 import net.terraimmerse.world.chunk.Chunk;
 import net.terraimmerse.world.entity.PlayerEntity;
-import net.terraimmerse.client.InputHandler;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -99,6 +98,8 @@ public class TerraImmerse {
     }
     public void run() {
         init();
+        ServerTickThread.movementThread.setDaemon(true);
+        ServerTickThread.movementThread.start();
         loop();
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
@@ -121,7 +122,7 @@ public class TerraImmerse {
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlasTexture);
         GL20.glUniform1i(textureLoc, 0);
-        GL20.glUniform1f(SkyRenderer.locLightAngle, SkyRenderer.lightAngle);
+        GL20.glUniform1f(skyRenderer.locLightAngle, skyRenderer.lightAngle);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(locModel, false, model.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(locView, false, view.get(stack.mallocFloat(16)));
