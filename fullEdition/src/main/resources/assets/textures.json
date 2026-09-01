@@ -1,5 +1,7 @@
 {
   "grass_cube": ["grass", "dirt", "grass_side", "grass_side", "grass_side", "grass_side"],
   "dirt_cube":["dirt", "dirt", "dirt", "dirt", "dirt", "dirt"],
-  "stone_cube":["stone", "stone", "stone", "stone", "stone", "stone"]
+  "stone_cube":["stone", "stone", "stone", "stone", "stone", "stone"],
+  "wooden_log": ["wooden_log_top", "wooden_log_top", "wooden_log","wooden_log","wooden_log","wooden_log"],
+  "leaves": ["leaves","leaves","leaves","leaves","leaves","leaves"]
 }

@@ -1,5 +1,6 @@
 package net.terraimmerse.client;
 
+import net.terraimmerse.client.blaze3d.WorldRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.joml.Vector3f;
 
@@ -57,10 +58,10 @@ public class InputHandler {
         front.y = (float)Math.sin(pitch);
         front.z = (float)(Math.cos(pitch) * Math.cos(yaw));
         front.normalize();
-        TerraImmerse.direction = new Vector3f(TerraImmerse.playerEntity.getPos()).add(front);
-        TerraImmerse.view.identity().lookAt(
+        WorldRenderer.direction = new Vector3f(TerraImmerse.playerEntity.getPos()).add(front);
+        WorldRenderer.view.identity().lookAt(
                 TerraImmerse.playerEntity.getPos(),
-                TerraImmerse.direction,
+                WorldRenderer.direction,
                 new Vector3f(0, 1, 0)
         );
         move_x=0;

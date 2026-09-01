@@ -2,7 +2,7 @@ package net.terraimmerse.client.blaze3d.sky;
 
 import net.terraimmerse.client.blaze3d.TextureLoader;
 import net.terraimmerse.client.blaze3d.ShaderCompiler;
-import net.terraimmerse.client.TerraImmerse;
+import net.terraimmerse.client.blaze3d.WorldRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -67,21 +67,21 @@ public class SkyRenderer {
         sunLocTexture = GL20.glGetUniformLocation(sunShader, "sunTexture");
         sunLocColor = GL20.glGetUniformLocation(sunShader, "sunColor");
         sunLocBrightness = GL20.glGetUniformLocation(sunShader, "brightness");
-        locLightAngle=GL20.glGetUniformLocation(TerraImmerse.shader, "lightAngle");
+        locLightAngle=GL20.glGetUniformLocation(WorldRenderer.shader, "lightAngle");
         sunR=1.0F;
         sunG=1.0F;
         sunB=1.0F;
-        brightness=0.0F;
+        brightness=1.0F;
         radius=10;
+        sunAngle=20;
     }
     public static void render(){
-        tickLight();
         brightness=calculateLight(sunAngle);
         GL11.glClearColor(0.2F*brightness, 0.4F*brightness, 0.8F*brightness, 1.0F);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(false);
-        sunView=new Matrix4f(new Matrix3f(TerraImmerse.view));
+        sunView=new Matrix4f(new Matrix3f(WorldRenderer.view));
         calculateSunPos();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -89,7 +89,7 @@ public class SkyRenderer {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(sunLocModel, false, sunModel.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(sunLocView, false, sunView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(sunLocProj, false, TerraImmerse.projection.get(stack.mallocFloat(16)));
+            GL20.glUniformMatrix4fv(sunLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
         }
         GL20.glUniform1f(sunLocBrightness,2.0F);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
@@ -103,11 +103,11 @@ public class SkyRenderer {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
     }
-    private static void tickLight(){
+    public static void tickLight(){
         if (sunAngle>=360.0F){
             sunAngle=0.0F;
         }
-        sunAngle+=0.1F;
+        sunAngle+=0.01F;
         lightAngle=(float) Math.toRadians(sunAngle);
         calculateSunColor(sunAngle);
     }
