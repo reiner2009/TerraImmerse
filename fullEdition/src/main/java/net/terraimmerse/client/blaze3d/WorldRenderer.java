@@ -31,19 +31,19 @@ public class WorldRenderer {
     private static Chunk chunk;
     public static Vector3f direction;
     public static void init(){
-        skyRenderer=new SkyRenderer();
-        skyRenderer.init();
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
+        skyRenderer=new SkyRenderer();
+        skyRenderer.init();
         chunk=new Chunk(0,0);
         worldGenerator = new WorldGenerator(chunk);
         clientChunk = new ClientChunk(chunk, MaterialRenderLayerMap.SOLIDE);
         cutoutClientChunk = new ClientChunk(chunk, MaterialRenderLayerMap.CUTOUT);
-        locModel= GL20.glGetUniformLocation(shader, "model");
+        locModel=GL20.glGetUniformLocation(shader, "model");
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
         locCutout=GL20.glGetUniformLocation(shader, "cutout");
-        atlasTexture= net.terraimmerse.client.blaze3d.TextureLoader.loadTexture("/assets/textures/atlas.png");
+        atlasTexture=net.terraimmerse.client.blaze3d.TextureLoader.loadTexture("/assets/textures/atlas.png");
         textureLoc=GL20.glGetUniformLocation(shader, "tex");
         model = new Matrix4f();
         model.identity().translate(0.0F, 0.0F, 0.0F);
@@ -54,7 +54,12 @@ public class WorldRenderer {
                 new Vector3f(0.0F, 1.0F, 0.0F)
         );
         projection = new Matrix4f();
-        projection.identity().perspective((float)Math.toRadians(45), (float) TerraImmerse.width /(float) TerraImmerse.height, 0.1F, 2000.0F);
+        projection.identity().perspective(
+                (float)Math.toRadians(45),
+                (float)TerraImmerse.width / (float)TerraImmerse.height,
+                0.1F,
+                2000.0F
+        );
     }
     public static void drawScene(){
         skyRenderer.render();
