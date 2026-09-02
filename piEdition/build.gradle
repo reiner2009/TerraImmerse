@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.terraimmerse'
-version = '0.3.0-Pi'
+version = 'classic-Pi-0.4.0'
 
 application {
     mainClass = 'net.terraimmerse.client.TerraImmerse'
