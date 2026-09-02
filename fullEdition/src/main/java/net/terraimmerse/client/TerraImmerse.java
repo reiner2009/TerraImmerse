@@ -3,7 +3,6 @@ package net.terraimmerse.client;
 import net.terraimmerse.client.blaze3d.WorldRenderer;
 import net.terraimmerse.world.ServerTickThread;
 import net.terraimmerse.world.entity.PlayerEntity;
-import net.terraimmerse.world.generator.feature.Features;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -54,7 +53,6 @@ public class TerraImmerse {
     public void run() {
         init();
         ClientInitializer.onInitializeClient();
-        Features.initFeatures();
         worldRenderer.init();
         ServerTickThread.movementThread.setDaemon(true);
         ServerTickThread.movementThread.start();
