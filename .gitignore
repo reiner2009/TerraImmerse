@@ -1,30 +1,68 @@
+Gradle
 
-# Ignore Python caches and artifacts
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pyc
-.mypy_cache/
-.pytest_cache/
-pip-wheel-metadata/
-
-# Virtual environments
-venv/
-.venv/
-env/
-ENV/
-
-# IDE/editor folders
-.vscode/
-.idea/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Build/dist
+.gradle/
 build/
-dist/
-*.egg-info/
+**/build/
+
+Gradle Wrapper
+
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+Java
+
+*.class
+*.log
+
+JVM crash dumps
+
+hs_err_pid*
+replay_pid*
+
+IntelliJ IDEA
+
+.idea/
+*.iml
+*.iws
+*.ipr
+
+Eclipse
+
+.classpath
+.project
+.settings/
+
+VS Code
+
+.vscode/
+
+NetBeans
+
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/
+
+OS generated files
+
 .DS_Store
-.gradle
+Thumbs.db
+
+Temporary files
+
+*.tmp
+*.temp
+*~
+
+Generated distributions
+
+*.zip
+*.tar
+*.tar.gz
+
+Environment / local configuration
+
+.env
+.env.*
+!.env.example

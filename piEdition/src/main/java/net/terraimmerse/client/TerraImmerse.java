@@ -3,7 +3,6 @@ package net.terraimmerse.client;
 import net.terraimmerse.client.blaze3d.WorldRenderer;
 import net.terraimmerse.world.ServerTickThread;
 import net.terraimmerse.world.entity.PlayerEntity;
-import net.terraimmerse.world.generator.feature.Features;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -22,8 +21,9 @@ public class TerraImmerse {
         }
         long monitor = GLFW.glfwGetPrimaryMonitor();
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         width=videoMode.width();
         height=videoMode.height();
         window = GLFW.glfwCreateWindow(
@@ -53,7 +53,6 @@ public class TerraImmerse {
     public void run() {
         init();
         ClientInitializer.onInitializeClient();
-        Features.initFeatures();
         worldRenderer.init();
         ServerTickThread.movementThread.setDaemon(true);
         ServerTickThread.movementThread.start();
