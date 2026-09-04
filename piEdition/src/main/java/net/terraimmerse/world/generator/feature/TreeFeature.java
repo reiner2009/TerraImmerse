@@ -47,7 +47,7 @@ public class TreeFeature implements Feature{
         for(Map.Entry<MaterialPos, String> entry : new HashMap<>(this.tree).entrySet()){
             MaterialPos relativePos=entry.getKey();
             String material=entry.getValue();
-            chunk.setMaterial(relativePos.x+ treePos.x, relativePos.y+ treePos.y, relativePos.z+ treePos.z, material);
+            chunk.setMaterial(relativePos.x + treePos.x, relativePos.y + treePos.y + 1, relativePos.z + treePos.z, material);
         }
     }
 }
