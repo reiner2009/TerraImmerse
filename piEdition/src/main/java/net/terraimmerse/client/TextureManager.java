@@ -3,7 +3,7 @@ package net.terraimmerse.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.terraimmerse.client.blaze3d.world.ClientChunk;
+import net.terraimmerse.client.render.world.ClientChunk;
 
 import java.io.IOException;
 import java.io.InputStream;

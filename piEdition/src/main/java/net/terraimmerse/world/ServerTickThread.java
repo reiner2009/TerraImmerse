@@ -1,7 +1,7 @@
 package net.terraimmerse.world;
 
 import net.terraimmerse.client.InputHandler;
-import net.terraimmerse.client.blaze3d.sky.SkyRenderer;
+import net.terraimmerse.client.render.sky.SkyRenderer;
 
 public class ServerTickThread {
     public static Thread movementThread = new Thread(() -> {

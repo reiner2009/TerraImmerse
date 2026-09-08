@@ -1,6 +1,6 @@
 package net.terraimmerse.client;
 
-import net.terraimmerse.client.blaze3d.WorldRenderer;
+import net.terraimmerse.client.render.WorldRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.joml.Vector3f;
 

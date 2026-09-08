@@ -16,9 +16,6 @@ public class PlayerEntity {
         this.pos.y+=y;
         this.pos.z+=z;
     }
-    public void setPos(float x, float y, float z){
-        this.pos = new Vector3f(x, y, z);
-    }
     public Vector3f getPos(){
         return this.pos;
     }

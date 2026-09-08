@@ -1,6 +1,6 @@
 package net.terraimmerse.client;
 
-import net.terraimmerse.client.blaze3d.WorldRenderer;
+import net.terraimmerse.client.render.WorldRenderer;
 import net.terraimmerse.world.ServerTickThread;
 import net.terraimmerse.world.entity.PlayerEntity;
 import org.lwjgl.glfw.GLFW;

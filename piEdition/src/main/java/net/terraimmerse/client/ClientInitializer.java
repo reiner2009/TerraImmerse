@@ -1,6 +1,6 @@
 package net.terraimmerse.client;
 
-import net.terraimmerse.client.blaze3d.MaterialRenderLayerMap;
+import net.terraimmerse.client.render.MaterialRenderLayerMap;
 
 public class ClientInitializer {
     public static MaterialRenderLayerMap.Registry materialRenderLayerMapRegistry;

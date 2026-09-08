@@ -1,4 +1,4 @@
-package net.terraimmerse.client.blaze3d;
+package net.terraimmerse.client.render;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;

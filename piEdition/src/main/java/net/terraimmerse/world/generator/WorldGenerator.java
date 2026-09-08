@@ -2,7 +2,7 @@ package net.terraimmerse.world.generator;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
 import net.terraimmerse.core.MaterialPos;
-import net.terraimmerse.world.chunk.Chunk;
+import net.terraimmerse.world.level.Chunk;
 import net.terraimmerse.world.generator.feature.TreeFeature;
 
 import java.util.HashMap;
