@@ -35,6 +35,7 @@ public class TerraImmerse {
         LOGGER.info("Stopped!");
     }
     public static void main(String[] args){
+		System.out.println("Starting TerraImmerse version 0.4.0-classic");
         new TerraImmerse().run();
     }
 

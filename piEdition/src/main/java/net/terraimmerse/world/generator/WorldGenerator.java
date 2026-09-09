@@ -2,14 +2,17 @@ package net.terraimmerse.world.generator;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
 import net.terraimmerse.core.MaterialPos;
-import net.terraimmerse.world.level.Chunk;
+import net.terraimmerse.world.level.Level;
 import net.terraimmerse.world.generator.feature.TreeFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class WorldGenerator {
+    private static final Logger LOGGER= LoggerFactory.getLogger(WorldGenerator.class);
     private static int size;
     private static Random random;
     private static OpenSimplexNoise noise;
@@ -20,35 +23,36 @@ public class WorldGenerator {
         double n3 = noise.getNoise2D(x * 1.6F, z * 1.6F).getValue() * 1.5;
         return n1 + n2 + n3;
     }
-    public WorldGenerator(Chunk chunk){
+    public WorldGenerator(Level level){
+        LOGGER.info("Generating world...");
         size=64;
         noise=new OpenSimplexNoise();
         random=new Random();
         for (int x = (int)-size/2; x < (int)size/2; x++){
             for (int z = (int)-size/2; z < (int)size/2; z++){
                 for (int y=0;y<getHeight(x,z);y++){
-                    chunk.setMaterial(x,y,z,"stone_cube");
+                    level.setMaterial(x,y,z,"stone_cube");
                 }
             }
         }
-        for (Map.Entry<MaterialPos, String> entry : chunk.getChunk().entrySet()) {
+        for (Map.Entry<MaterialPos, String> entry : level.getLevel().entrySet()) {
             MaterialPos materialPos = entry.getKey();
-            if (chunk.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z).equals("air")) {
-                chunk.setMaterial(materialPos.x, materialPos.y, materialPos.z, "grass_cube");
+            if (level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z).equals("air")) {
+                level.setMaterial(materialPos.x, materialPos.y, materialPos.z, "grass_cube");
             }
         }
-        for (Map.Entry<MaterialPos, String> entry : chunk.getChunk().entrySet()) {
+        for (Map.Entry<MaterialPos, String> entry : level.getLevel().entrySet()) {
             MaterialPos materialPos = entry.getKey();
-            if (chunk.getMaterial(materialPos.x, materialPos.y+1, materialPos.z).equals("grass_cube")){
-                chunk.setMaterial(materialPos.x, materialPos.y, materialPos.z, "dirt_cube");
+            if (level.getMaterial(materialPos.x, materialPos.y+1, materialPos.z).equals("grass_cube")){
+                level.setMaterial(materialPos.x, materialPos.y, materialPos.z, "dirt_cube");
             }
         }
-        for (Map.Entry<MaterialPos, String> entry : new HashMap<>(chunk.getChunk()).entrySet()) {
+        for (Map.Entry<MaterialPos, String> entry : new HashMap<>(level.getLevel()).entrySet()) {
             MaterialPos materialPos = entry.getKey();
-            if (random.nextInt(150) == 1 && chunk.getMaterial(materialPos.x, materialPos.y, materialPos.z).equals("grass_cube") && chunk.getMaterial(materialPos.x+1, materialPos.y+1, materialPos.z).equals("air") && chunk.getMaterial(materialPos.x-1, materialPos.y+1, materialPos.z).equals("air") && chunk.getMaterial(materialPos.x, materialPos.y+1, materialPos.z+1).equals("air") && chunk.getMaterial(materialPos.x, materialPos.y+1, materialPos.z-1).equals("air")) {
+            if (random.nextInt(150) == 1 && level.getMaterial(materialPos.x, materialPos.y, materialPos.z).equals("grass_cube") && level.getMaterial(materialPos.x+1, materialPos.y+1, materialPos.z).equals("air") && level.getMaterial(materialPos.x-1, materialPos.y+1, materialPos.z).equals("air") && level.getMaterial(materialPos.x, materialPos.y+1, materialPos.z+1).equals("air") && level.getMaterial(materialPos.x, materialPos.y+1, materialPos.z-1).equals("air")) {
                 treeFeature = new TreeFeature();
                 treeFeature.init();
-                treeFeature.place(new MaterialPos(materialPos.x, materialPos.y, materialPos.z), chunk);
+                treeFeature.place(new MaterialPos(materialPos.x, materialPos.y, materialPos.z), level);
             }
         }
     }

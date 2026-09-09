@@ -1,6 +1,8 @@
-package net.terraimmerse.client;
+package net.terraimmerse.client.input;
 
-import net.terraimmerse.client.render.WorldRenderer;
+import net.terraimmerse.client.TerraImmerse;
+import net.terraimmerse.client.render.RenderThread;
+import net.terraimmerse.client.render.world.WorldRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.joml.Vector3f;
 
@@ -25,6 +27,7 @@ public class InputHandler {
     private static boolean dPressed;
     private static boolean shiftPressed;
     private static boolean spacePressed;
+    private static boolean ctrlPressed;
     public static void init(){
         sensity=0.002F;
         speed=0.3F;
@@ -34,11 +37,12 @@ public class InputHandler {
         dPressed=false;
         shiftPressed=false;
         spacePressed=false;
+        ctrlPressed=false;
     }
     public static void handleInput(){
         double[] xpos = new double[1];
         double[] ypos = new double[1];
-        GLFW.glfwGetCursorPos(TerraImmerse.window, xpos, ypos);
+        GLFW.glfwGetCursorPos(RenderThread.window, xpos, ypos);
         if (firstMouse) {
             lastX = xpos[0];
             lastY = ypos[0];
@@ -71,12 +75,13 @@ public class InputHandler {
         dz = (float) Math.cos(TerraImmerse.playerEntity.yaw);
         dx_side = (float) Math.sin(TerraImmerse.playerEntity.yaw-Math.toRadians(90));
         dz_side = (float) Math.cos(TerraImmerse.playerEntity.yaw-Math.toRadians(90));
-        wPressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS;
-        sPressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS;
-        aPressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS;
-        dPressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS;
-        spacePressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS;
-        shiftPressed=GLFW.glfwGetKey(TerraImmerse.window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS;
+        wPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_W) == GLFW.GLFW_PRESS;
+        sPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_S) == GLFW.GLFW_PRESS;
+        aPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_A) == GLFW.GLFW_PRESS;
+        dPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_D) == GLFW.GLFW_PRESS;
+        spacePressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_SPACE) == GLFW.GLFW_PRESS;
+        shiftPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS;
+        ctrlPressed=GLFW.glfwGetKey(RenderThread.window, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS;
     }
     public static void tickMovement(){
         if(wPressed){
@@ -100,6 +105,12 @@ public class InputHandler {
         }
         if(shiftPressed){
             move_y-=speed;
+        }
+        if(ctrlPressed){
+            speed=0.6F;
+        }
+        if(!ctrlPressed){
+            speed=0.3F;
         }
         TerraImmerse.playerEntity.move(move_x, move_y, move_z);
     }

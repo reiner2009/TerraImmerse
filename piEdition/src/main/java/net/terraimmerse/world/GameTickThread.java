@@ -1,10 +1,10 @@
 package net.terraimmerse.world;
 
-import net.terraimmerse.client.InputHandler;
+import net.terraimmerse.client.input.InputHandler;
 import net.terraimmerse.client.render.sky.SkyRenderer;
 
-public class ServerTickThread {
-    public static Thread movementThread = new Thread(() -> {
+public class GameTickThread {
+    public static Thread entityMovementThread = new Thread(() -> {
         final long tickTime = 1_000_000_000L / 60;
         long nextTick = System.nanoTime();
         while (!Thread.currentThread().isInterrupted()) {
@@ -26,7 +26,7 @@ public class ServerTickThread {
             }
         }
     });
-    public static Thread serverTickThread = new Thread(() -> {
+    public static Thread gameTickThread = new Thread(() -> {
         final long tickTime = 1_000_000_000L / 20;
         long nextTick = System.nanoTime();
         while (!Thread.currentThread().isInterrupted()) {
