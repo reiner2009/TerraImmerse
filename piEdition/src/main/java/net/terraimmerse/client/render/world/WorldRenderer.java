@@ -4,6 +4,7 @@ import net.terraimmerse.client.render.MaterialRenderLayerMap;
 import net.terraimmerse.client.render.RenderThread;
 import net.terraimmerse.client.render.ShaderCompiler;
 import net.terraimmerse.client.render.sky.SkyRenderer;
+import net.terraimmerse.client.render.sky.SunRenderer;
 import net.terraimmerse.world.generator.WorldGenerator;
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.world.level.Level;
@@ -38,36 +39,27 @@ public class WorldRenderer {
     public static void init(){
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl", "WorldShader");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
-
         skyRenderer=new SkyRenderer();
         skyRenderer.init();
-
-        level =new Level();
+        level = new Level();
         new WorldGenerator(level);
-
         LOGGER.info("Loading terrian...");
-
         clientLevel = new ClientLevel(level, MaterialRenderLayerMap.SOLIDE);
         cutoutTextureClientLevel = new ClientLevel(level, MaterialRenderLayerMap.CUTOUT);
-
         locModel=GL20.glGetUniformLocation(shader, "model");
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
         locCutout=GL20.glGetUniformLocation(shader, "cutout");
-
         atlasTexture=TextureManager.textures.get("/assets/textures/atlas.png");
         textureLoc=GL20.glGetUniformLocation(shader, "tex");
-
         model = new Matrix4f();
         model.identity().translate(0.0F, 0.0F, 0.0F);
-
         view = new Matrix4f();
         view.identity().lookAt(
                 new Vector3f(0.0F, 0.0F, 3.0F),
                 new Vector3f(0.0F, 0.0F, 0.0F),
                 new Vector3f(0.0F, 1.0F, 0.0F)
         );
-
         projection = new Matrix4f();
         projection.identity().perspective(
                 (float)Math.toRadians(45),
@@ -76,54 +68,37 @@ public class WorldRenderer {
                 2000.0F
         );
     }
-
     public static void drawScene(){
         skyRenderer.render();
-
         GL20.glUseProgram(shader);
-
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlasTexture);
-
         GL20.glUniform1i(textureLoc, 0);
-        GL20.glUniform1f(skyRenderer.locLightAngle, skyRenderer.lightAngle);
-
+        GL20.glUniform1f(SunRenderer.locLightAngle, SunRenderer.lightAngle);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(locModel, false, model.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(locView, false, view.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(locProj, false, projection.get(stack.mallocFloat(16)));
         }
-
         GL20.glUniform1i(locCutout, 0);
-
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, clientLevel.getVao());
-
         GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 0L);
         GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8*Float.BYTES, 12L);
         GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 20L);
-
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
-
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) clientLevel.getVertices().length / 8);
-
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-
         GL20.glUniform1i(locCutout, 1);
-
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cutoutTextureClientLevel.getVao());
-
         GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 0L);
         GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8*Float.BYTES, 12L);
         GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 20L);
-
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
-
-        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) cutoutTextureClientLevel.getVertices().length / 8);
-
+        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int)cutoutTextureClientLevel.getVertices().length / 8);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
 }

@@ -24,7 +24,7 @@ public class RenderThread {
         LOGGER.info("Initialized videoMode");
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
-        LOGGER.info("OpenGL version: 3.3");
+        LOGGER.info("OpenGL version: 2.0");
         width=videoMode.width();
         height=videoMode.height();
         window = GLFW.glfwCreateWindow(

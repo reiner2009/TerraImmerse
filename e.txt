@@ -1,0 +1,76 @@
+rhein@electropi:~/TerraImmerse $ ./gradlew piEdition:run --console=plain
+> Task :piEdition:compileJava
+> Task :piEdition:processResources UP-TO-DATE
+> Task :piEdition:classes
+
+> Task :piEdition:run
+Starting TerraImmerse version 0.4.0-classic
+[14:55:24] [RenderThread/INFO] Created monitor
+[14:55:25] [RenderThread/INFO] Initialized videoMode
+[14:55:25] [RenderThread/INFO] OpenGL version: 2.0
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:39:34: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:40:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:41:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:42:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:43:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:44:27: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:45:27: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:46:27: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:47:27: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:48:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:49:29: string literal is not a valid UTF-8 string
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:49:29: too many errors
+xkbcommon: ERROR: /usr/share/X11/locale/iso8859-1/Compose:49:29: failed to parse file
+[14:55:25] [RenderThread/INFO] Created window
+[14:55:25] [RenderThread/INFO] Created OpenGL context
+[14:55:25] [AtlasManager/INFO] Creating atlas data
+[14:55:26] [AtlasManager/INFO] model 1 of 5 successfully created
+[14:55:26] [AtlasManager/INFO] model 2 of 5 successfully created
+[14:55:26] [AtlasManager/INFO] model 3 of 5 successfully created
+[14:55:26] [AtlasManager/INFO] model 4 of 5 successfully created
+[14:55:26] [AtlasManager/INFO] model 5 of 5 successfully created
+[14:55:26] [TerraImmerse/INFO] Initialized TerraImmerse
+[14:55:26] [ClientInitializer/INFO] Created materialRenderLayerMaps
+[14:55:26] [TextureManager/INFO] Loaded texture 1
+[14:55:26] [TextureManager/INFO] Loaded texture 2
+[14:55:26] [TextureManager/INFO] Loaded texture 3
+[14:55:26] [ClientInitializer/INFO] Loaded 3 textures
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for WorldShader
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for WorldShader
+[14:55:26] [ShaderCompiler/INFO] Compiled a shader file for WorldShader
+[14:55:26] [ShaderCompiler/INFO] Compiled a shader file for WorldShader
+[14:55:26] [ShaderCompiler/INFO] Created shader program for WorldShader
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for SunShader
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for SunShader
+[14:55:26] [ShaderCompiler/INFO] Compiled a shader file for SunShader
+[14:55:26] [ShaderCompiler/INFO] Compiled a shader file for SunShader
+[14:55:26] [ShaderCompiler/INFO] Created shader program for SunShader
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for SkyShader
+[14:55:26] [ShaderCompiler/INFO] Loaded a shader file for SkyShader
+Exception in thread "main" java.lang.RuntimeException: Falied to compile shader:
+0:12(2): error: value of type mat4 cannot be assigned to variable of type vec4
+
+	at net.terraimmerse.client.render.ShaderCompiler.compileShader(ShaderCompiler.java:41)
+	at net.terraimmerse.client.render.ShaderCompiler.createShaderProgram(ShaderCompiler.java:47)
+	at net.terraimmerse.client.render.sky.SkyRenderer.init(SkyRenderer.java:93)
+	at net.terraimmerse.client.render.world.WorldRenderer.init(WorldRenderer.java:43)
+	at net.terraimmerse.client.TerraImmerse.run(TerraImmerse.java:28)
+	at net.terraimmerse.client.TerraImmerse.main(TerraImmerse.java:39)
+
+> Task :piEdition:run FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':piEdition:run'.
+> Process 'command '/usr/lib/jvm/java-17-openjdk-armhf/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 15s
+3 actionable tasks: 2 executed, 1 up-to-date
+rhein@electropi:~/TerraImmerse $ ^C
