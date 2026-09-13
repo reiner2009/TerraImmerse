@@ -70,11 +70,6 @@ public class SkyBoxRenderer{
 		vbo=GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, skyVertices, GL15.GL_STATIC_DRAW);
-		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 5*4, 0L);
-		GL20.glEnableVertexAttribArray(0);
-		GL20.glVertexAttribPointer(1,2, GL11.GL_FLOAT, false, 5*4, 12L);
-		GL20.glEnableVertexAttribArray(1);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	public static void init(){
 		skyShaderCompiler=new ShaderCompiler("/assets/shader/sky.vert", "/assets/shader/sky.frag", "SkyShader");
@@ -107,7 +102,7 @@ public class SkyBoxRenderer{
         GL20.glEnableVertexAttribArray(0);
         GL20.glVertexAttribPointer(1,2, GL11.GL_FLOAT, false, 5*4, 12L);
         GL20.glEnableVertexAttribArray(1);
-        GL20.glDrawArrays(GL11.GL_TRIANGLES,0,(int)skyVertices.length/6*2);
+        GL20.glDrawArrays(GL11.GL_TRIANGLES,0,(int)skyVertices.length/5*2);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 }
