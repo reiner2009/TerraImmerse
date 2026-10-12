@@ -25,6 +25,7 @@ public class WorldRenderer {
     private static int locView;
     private static int locProj;
     private static int locCutout;
+    private static int locLightAngle;
     private static int atlasTexture;
     private static int textureLoc;
     private static Matrix4f model;
@@ -50,6 +51,7 @@ public class WorldRenderer {
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
         locCutout=GL20.glGetUniformLocation(shader, "cutout");
+        locLightAngle=GL20.glGetUniformLocation(shader, "lightAngle");
         atlasTexture=TextureManager.textures.get("/assets/textures/atlas.png");
         textureLoc=GL20.glGetUniformLocation(shader, "tex");
         model = new Matrix4f();
@@ -74,7 +76,7 @@ public class WorldRenderer {
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlasTexture);
         GL20.glUniform1i(textureLoc, 0);
-        GL20.glUniform1f(SunRenderer.locLightAngle, SunRenderer.lightAngle);
+        GL20.glUniform1f(locLightAngle, SunRenderer.lightAngle);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(locModel, false, model.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(locView, false, view.get(stack.mallocFloat(16)));

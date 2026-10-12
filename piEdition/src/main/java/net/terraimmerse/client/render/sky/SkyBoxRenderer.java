@@ -73,36 +73,36 @@ public class SkyBoxRenderer{
 	}
 	public static void init(){
 		skyShaderCompiler=new ShaderCompiler("/assets/shader/sky.vert", "/assets/shader/sky.frag", "SkyShader");
-        skyShader=skyShaderCompiler.createShaderProgram(skyShaderCompiler.vertexShaderSrc, skyShaderCompiler.fragmentShaderSrc);
-        skyLocModel= GL20.glGetUniformLocation(skyShader, "model");
-        skyLocView = GL20.glGetUniformLocation(skyShader, "view");
-        skyLocProj = GL20.glGetUniformLocation(skyShader, "projection");
-        skyLocTexture = GL20.glGetUniformLocation(skyShader, "skyTexture");
-        skyLocColor = GL20.glGetUniformLocation(skyShader, "skyColor");
-        skyR=1.0F;
-        skyG=1.0F;
-        skyB=1.0F;
+		skyShader=skyShaderCompiler.createShaderProgram(skyShaderCompiler.vertexShaderSrc, skyShaderCompiler.fragmentShaderSrc);
+		skyLocModel= GL20.glGetUniformLocation(skyShader, "model");
+		skyLocView = GL20.glGetUniformLocation(skyShader, "view");
+		skyLocProj = GL20.glGetUniformLocation(skyShader, "projection");
+		skyLocTexture = GL20.glGetUniformLocation(skyShader, "skyTexture");
+		skyLocColor = GL20.glGetUniformLocation(skyShader, "skyColor");
+		skyR=1.0F;
+		skyG=1.0F;
+		skyB=1.0F;
 	}
 	public static void render(){
 		skyView=new Matrix4f(new Matrix3f(WorldRenderer.view));
-        skyModel=new Matrix4f().identity();
-        skyModel.translate(0,0,0);
-        GL20.glUseProgram(skyShader);
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            GL20.glUniformMatrix4fv(skyLocModel, false, skyModel.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(skyLocView, false, skyView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(skyLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
-        }
-        GL20.glActiveTexture(GL20.GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, skyBoxTexture);
-        GL20.glUniform1i(skyLocTexture,0);
-        GL20.glUniform3f(skyLocColor,skyR,skyG,skyB);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 5*4, 0L);
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glVertexAttribPointer(1,2, GL11.GL_FLOAT, false, 5*4, 12L);
-        GL20.glEnableVertexAttribArray(1);
-        GL20.glDrawArrays(GL11.GL_TRIANGLES,0,(int)skyVertices.length/5*2);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		skyModel=new Matrix4f().identity();
+		skyModel.translate(0,0,0);
+		GL20.glUseProgram(skyShader);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+		    GL20.glUniformMatrix4fv(skyLocModel, false, skyModel.get(stack.mallocFloat(16)));
+		    GL20.glUniformMatrix4fv(skyLocView, false, skyView.get(stack.mallocFloat(16)));
+		    GL20.glUniformMatrix4fv(skyLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
+		}
+		GL20.glActiveTexture(GL20.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, skyBoxTexture);
+		GL20.glUniform1i(skyLocTexture,0);
+		GL20.glUniform3f(skyLocColor,skyR,skyG,skyB);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 5*4, 0L);
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glVertexAttribPointer(1,2, GL11.GL_FLOAT, false, 5*4, 12L);
+		GL20.glEnableVertexAttribArray(1);
+		GL20.glDrawArrays(GL11.GL_TRIANGLES,0,(int)skyVertices.length/5*2);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 }
