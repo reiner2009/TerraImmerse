@@ -33,7 +33,7 @@ public abstract class AbstractSunEffectRenderer{
     public AbstractSunEffectRenderer(String texturePath, float[] vboArray){
         this.sunEffectVertices=vboArray;
         this.sunEffectTexture = TextureManager.textures.get(texturePath);
-        vbo = GL15.glGenBuffers();
+        this.vbo = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.sunEffectVertices, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 5*4, 0L);
