@@ -1,6 +1,6 @@
 package net.terraimmerse.world.level;
 
-import net.terraimmerse.core.MaterialPos;
+import net.terraimmerse.world.material.MaterialPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,10 +1,12 @@
 package net.terraimmerse.client.render.world;
 
+import net.terraimmerse.client.TerraImmerse;
 import net.terraimmerse.client.render.MaterialRenderLayerMap;
 import net.terraimmerse.client.render.RenderThread;
 import net.terraimmerse.client.render.ShaderCompiler;
 import net.terraimmerse.client.render.sky.SkyRenderer;
 import net.terraimmerse.client.render.sky.SunRenderer;
+import net.terraimmerse.world.entity.PlayerEntity;
 import net.terraimmerse.world.generator.WorldGenerator;
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.world.level.Level;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public class WorldRenderer {
     private static final Logger LOGGER= LoggerFactory.getLogger(WorldGenerator.class);
     private static SkyRenderer skyRenderer;
+    private static WaterFogRenderer waterFogRenderer;
     private static ShaderCompiler shaderCompiler;
     private static int locModel;
     private static int locView;
@@ -35,19 +38,21 @@ public class WorldRenderer {
     public static int shader;
     private static ClientLevel clientLevel;
     private static ClientLevel cutoutTextureClientLevel;
+    private static ClientLevel translucentClientLevel;
     private static Level level;
     public static Vector3f direction;
-
     public static void init(){
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl", "WorldShader");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
         skyRenderer=new SkyRenderer();
         skyRenderer.init();
+        waterFogRenderer=new WaterFogRenderer();
         level = new Level();
         new WorldGenerator(level);
         LOGGER.info("Loading terrian...");
         clientLevel = new ClientLevel(level, MaterialRenderLayerMap.SOLIDE);
         cutoutTextureClientLevel = new ClientLevel(level, MaterialRenderLayerMap.CUTOUT);
+        translucentClientLevel = new ClientLevel(level, MaterialRenderLayerMap.TRANSLUCENT);
         locModel=GL20.glGetUniformLocation(shader, "model");
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
@@ -91,5 +96,18 @@ public class WorldRenderer {
         GL30.glBindVertexArray(cutoutTextureClientLevel.getVao());
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) cutoutTextureClientLevel.getVertices().length / 8);
         GL30.glBindVertexArray(0);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL20.glUniform1i(locCutout, 0);
+        GL30.glBindVertexArray(translucentClientLevel.getVao());
+        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) translucentClientLevel.getVertices().length / 8);
+        GL30.glBindVertexArray(0);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        PlayerEntity player=TerraImmerse.playerEntity;
+        if(level.getMaterial((int)Math.floor(player.pos.x), (int)Math.floor(player.pos.y), (int)Math.floor(player.pos.z)).equals("water")){
+            waterFogRenderer.render();
+        }
     }
 }

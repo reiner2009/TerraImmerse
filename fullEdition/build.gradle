@@ -61,6 +61,8 @@ tasks.named("run") {
     if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
         jvmArgs "-XstartOnFirstThread"
     }
+    minHeapSize = '4G'
+    maxHeapSize = '12G'
 }
 tasks.named("shadowJar") {
     archiveBaseName = "TerraImmerse"

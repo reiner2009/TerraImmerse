@@ -5,5 +5,7 @@
   "stone": [1,1],
   "wooden_log": [2, 0],
   "wooden_log_top": [2,1],
-  "leaves": [0,2]
+  "leaves": [0,2],
+  "desert_sand": [1,2],
+  "water": [2,2]
 }

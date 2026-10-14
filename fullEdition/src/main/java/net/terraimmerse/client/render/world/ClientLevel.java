@@ -3,7 +3,7 @@ package net.terraimmerse.client.render.world;
 import net.terraimmerse.client.ClientInitializer;
 import net.terraimmerse.client.TerraImmerse;
 import net.terraimmerse.client.render.MaterialRenderLayerMap;
-import net.terraimmerse.core.MaterialPos;
+import net.terraimmerse.world.material.MaterialPos;
 import net.terraimmerse.world.level.Level;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;

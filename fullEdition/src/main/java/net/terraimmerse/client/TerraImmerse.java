@@ -6,6 +6,7 @@ import net.terraimmerse.client.input.InputHandler;
 import net.terraimmerse.client.manager.AtlasManager;
 import net.terraimmerse.world.GameTickThread;
 import net.terraimmerse.world.entity.PlayerEntity;
+import net.terraimmerse.world.generator.WorldGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class TerraImmerse {
         GameTickThread.entityMovementThread.start();
         GameTickThread.gameTickThread.setDaemon(true);
         GameTickThread.gameTickThread.start();
+        playerEntity.spawnAtMaterial(WorldGenerator.getSpawnPos());
         RenderThread.render();
         RenderThread.shutdown();
         LOGGER.info("Stopped!");

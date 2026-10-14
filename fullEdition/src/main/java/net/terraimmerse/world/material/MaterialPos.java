@@ -1,4 +1,4 @@
-package net.terraimmerse.core;
+package net.terraimmerse.world.material;
 
 public class MaterialPos {
     public int x;

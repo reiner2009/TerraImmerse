@@ -102,10 +102,7 @@ public class MaterialRenderer {
                     z + neighbors[i][2]
             );
 
-            if ("air".equals(neighborMaterial)
-                    || MaterialRenderLayerMap.CUTOUT.equals(
-                    ClientInitializer.materialRenderLayerMapRegistry.get(neighborMaterial)
-            )) {
+            if (("air".equals(neighborMaterial)) || (MaterialRenderLayerMap.CUTOUT.equals(ClientInitializer.materialRenderLayerMapRegistry.get(neighborMaterial)) || (MaterialRenderLayerMap.TRANSLUCENT.equals(ClientInitializer.materialRenderLayerMapRegistry.get(neighborMaterial)))) && (!MaterialRenderLayerMap.TRANSLUCENT.equals(ClientInitializer.materialRenderLayerMapRegistry.get(material)))) {
                 for (float v : faces[i]) {
                     vertices.add(v);
                 }

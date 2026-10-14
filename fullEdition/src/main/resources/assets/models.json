@@ -3,5 +3,7 @@
   "dirt_cube":["dirt", "dirt", "dirt", "dirt", "dirt", "dirt"],
   "stone_cube":["stone", "stone", "stone", "stone", "stone", "stone"],
   "wooden_log": ["wooden_log_top", "wooden_log_top", "wooden_log","wooden_log","wooden_log","wooden_log"],
-  "leaves": ["leaves","leaves","leaves","leaves","leaves","leaves"]
+  "leaves": ["leaves","leaves","leaves","leaves","leaves","leaves"],
+  "desert_sand": ["desert_sand","desert_sand","desert_sand","desert_sand","desert_sand","desert_sand"],
+  "water": ["water","water","water","water","water","water"]
 }

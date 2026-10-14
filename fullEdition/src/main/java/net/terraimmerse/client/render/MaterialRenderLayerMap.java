@@ -5,7 +5,8 @@ import java.util.Map;
 
 public enum MaterialRenderLayerMap {
     SOLIDE(),
-    CUTOUT();
+    CUTOUT(),
+    TRANSLUCENT();
     public static class Registry {
         private final Map<String, MaterialRenderLayerMap> materialRenderLayerMap = new HashMap<>();
         public void putMaterial(MaterialRenderLayerMap map, String material) {

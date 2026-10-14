@@ -13,9 +13,11 @@ public class ClientInitializer {
         materialRenderLayerMapRegistry = new MaterialRenderLayerMap.Registry();
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "grass_cube");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "dirt_cube");
+        materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "desert_sand");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "stone_cube");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "wooden_log");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.CUTOUT, "leaves");
+        materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.TRANSLUCENT, "water");
         LOGGER.info("Created materialRenderLayerMaps");
         TextureManager.build(textures);
         LOGGER.info("Loaded "+textures.length+" textures");

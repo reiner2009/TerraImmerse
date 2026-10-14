@@ -6,6 +6,7 @@ public class SkyRenderer{
 	private static SkyBoxRenderer skyBoxRenderer;
 	public static SunRenderer sunRenderer;
 	private static SunEffectRenderer sunEffectRenderer;
+    private static StarsRenderer starsRenderer;
 	private static float bright;
 	private static float dark;
 	private static float t;
@@ -16,8 +17,9 @@ public class SkyRenderer{
 		skyBoxRenderer.init();
 		sunRenderer=new SunRenderer();
 		sunEffectRenderer=new SunEffectRenderer();
+        starsRenderer=new StarsRenderer();
 		brightness=1.0F;
-		sunStep=0.5F;
+		sunStep=0.001F;
 	}
 	public static void render(){
 		brightness=calculateLight(SunRenderer.sunAngle);
@@ -29,6 +31,7 @@ public class SkyRenderer{
         SkyBoxRenderer.skyG=brightness;
         SkyBoxRenderer.skyB=brightness;
         skyBoxRenderer.render();
+        starsRenderer.render();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         sunEffectRenderer.setAlpha(calculateSunEffectAlpha(SunRenderer.sunAngle));
