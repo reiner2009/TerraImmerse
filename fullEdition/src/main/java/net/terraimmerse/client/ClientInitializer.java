@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class ClientInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientInitializer.class);
     public static MaterialRenderLayerMap.Registry materialRenderLayerMapRegistry;
-    private static String[] textures = {"/assets/textures/atlas.png", "/assets/textures/sky/sun.png", "/assets/textures/sky/skybox.png"};
+    private static String[] textures = {"/assets/textures/atlas.png", "/assets/textures/sky/sun.png","/assets/textures/sky/skybox.png"};
     public static void init(){
         materialRenderLayerMapRegistry = new MaterialRenderLayerMap.Registry();
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "grass_cube");
@@ -16,6 +16,8 @@ public class ClientInitializer {
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "desert_sand");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "stone_cube");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "wooden_log");
+        materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "gravel_cube");
+        materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.SOLIDE, "sand_cube");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.CUTOUT, "leaves");
         materialRenderLayerMapRegistry.putMaterial(MaterialRenderLayerMap.TRANSLUCENT, "water");
         LOGGER.info("Created materialRenderLayerMaps");

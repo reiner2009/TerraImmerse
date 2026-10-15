@@ -46,7 +46,7 @@ public class WaterFogRenderer {
         GL11.glDepthMask(false);
         GL20.glUseProgram(shader);
         GL20.glUniform3f(GL20.glGetUniformLocation(shader, "screenColor"), 0.157f, 0.471f, 0.710f);
-        GL20.glUniform1f(GL20.glGetUniformLocation(shader, "alpha"), 0.8f);
+        GL20.glUniform1f(GL20.glGetUniformLocation(shader, "alpha"), 0.9f);
         GL30.glBindVertexArray(vao);
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
         GL30.glBindVertexArray(0);

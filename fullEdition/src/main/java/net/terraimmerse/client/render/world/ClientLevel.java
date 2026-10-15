@@ -28,7 +28,7 @@ public class ClientLevel {
             MaterialPos pos = entry.getKey();
             String material = entry.getValue();
             if( ClientInitializer.materialRenderLayerMapRegistry.get(material).equals(this.materialRenderLayerMap)) {
-                float[] vert = MaterialRenderer.getVertices(pos.x, pos.y, pos.z, entry.getValue(), level, TerraImmerse.atlasManager.getAtlasData(), 3, 3, TerraImmerse.atlasManager.getTextureData());
+                float[] vert = MaterialRenderer.getVertices(pos.x, pos.y, pos.z, entry.getValue(), level, TerraImmerse.atlasManager.getAtlasData(), 4, 4, TerraImmerse.atlasManager.getTextureData());
                 for (float v : vert) {
                     this.verticesList.add(v);
                 }

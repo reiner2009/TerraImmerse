@@ -15,16 +15,17 @@ public class WorldGenerator {
     private static final Logger LOGGER= LoggerFactory.getLogger(WorldGenerator.class);
     private static int size;
     private static Random random;
-    private static OpenSimplexNoise noise;
+    private static OpenSimplexNoise landscapeNoise;
+    private static OpenSimplexNoise biomeNoise;
     private static TreeFeature treeFeature;
     public static double getHeight(int x, int z){
-        double n1 = noise.getNoise2D(x * 0.1F, z * 0.1F).getValue() * 60 + 60;
-        double n2 = noise.getNoise2D(x * 0.4F, z * 0.4F).getValue() * 16 + 8;
-        double n3 = noise.getNoise2D(x * 1.6F, z * 1.6F).getValue() * 3;
+        double n1 = landscapeNoise.getNoise2D(x * 0.1F, z * 0.1F).getValue() * 60 + 60;
+        double n2 = landscapeNoise.getNoise2D(x * 0.4F, z * 0.4F).getValue() * 16 + 8;
+        double n3 = landscapeNoise.getNoise2D(x * 1.6F, z * 1.6F).getValue() * 3;
         return n1 + n2 + n3;
     }
     private Biome getBiome(int x, int z){
-        double n = noise.getNoise2D(x * 0.1, z * 0.1).getValue();
+        double n = biomeNoise.getNoise2D(x * 0.1, z * 0.1).getValue();
         if (n < -0.3){
             return Biome.DESERT;
         }
@@ -36,10 +37,21 @@ public class WorldGenerator {
         }
         return Biome.PLAINS;
     }
-    private String getWaterGround(int x, int z){
-        double n = noise.getNoise2D(x * 1.0, z * 1.0).getValue();
-        if(n < 0.0){
-            return "dirt_cube";
+    private String getWaterGround(int x, int y, int z){
+        double n = landscapeNoise.getNoise2D(x * 2.0, z * 2.0).getValue();
+        if(!getBiome(x, z).equals(Biome.DESERT)) {
+            if (n < -0.6) {
+                if(y < 50) {
+                    return "dirt_cube";
+                }
+                else {
+                    return "grass_cube";
+                }
+            }
+            if (n >= -0.6 && n < 0.0) {
+                return "gravel_cube";
+            }
+            return "sand_cube";
         }
         return "desert_sand";
     }
@@ -52,8 +64,9 @@ public class WorldGenerator {
     }
     public WorldGenerator(Level level){
         LOGGER.info("Generating world...");
-        size=128;
-        noise=new OpenSimplexNoise();
+        size=256;
+        landscapeNoise=new OpenSimplexNoise(0L);
+        biomeNoise=new OpenSimplexNoise(1L);
         random=new Random();
         for (int x = (int)-size/2; x < (int)size/2; x++){
             for (int z = (int)-size/2; z < (int)size/2; z++){
@@ -73,9 +86,9 @@ public class WorldGenerator {
         }
         for (var entry : new HashMap<>(level.getLevel()).entrySet()){
             MaterialPos materialPos = entry.getKey();
-            if(materialPos.y < 50 && level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z).equals("air")){
-                level.setMaterial(materialPos.x, materialPos.y, materialPos.z, getWaterGround(materialPos.x, materialPos.z));
-                level.setMaterial(materialPos.x, materialPos.y + 1, materialPos.z, getWaterGround(materialPos.x, materialPos.z));
+            if(materialPos.y <= 52 && level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z).equals("air")){
+                level.setMaterial(materialPos.x, materialPos.y, materialPos.z, getWaterGround(materialPos.x, materialPos.y, materialPos.z));
+                level.setMaterial(materialPos.x, materialPos.y - 1, materialPos.z, getWaterGround(materialPos.x, materialPos.y - 1, materialPos.z));
                 for(int y = materialPos.y + 1; y <= 50; y++){
                     level.setMaterial(materialPos.x, y, materialPos.z, "water");
                 }

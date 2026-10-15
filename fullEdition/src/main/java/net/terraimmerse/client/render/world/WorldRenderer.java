@@ -96,7 +96,6 @@ public class WorldRenderer {
         GL30.glBindVertexArray(cutoutTextureClientLevel.getVao());
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) cutoutTextureClientLevel.getVertices().length / 8);
         GL30.glBindVertexArray(0);
-        GL11.glDisable(GL11.GL_CULL_FACE);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL20.glUniform1i(locCutout, 0);
@@ -104,7 +103,6 @@ public class WorldRenderer {
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) translucentClientLevel.getVertices().length / 8);
         GL30.glBindVertexArray(0);
         GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_CULL_FACE);
         PlayerEntity player=TerraImmerse.playerEntity;
         if(level.getMaterial((int)Math.floor(player.pos.x), (int)Math.floor(player.pos.y), (int)Math.floor(player.pos.z)).equals("water")){
             waterFogRenderer.render();

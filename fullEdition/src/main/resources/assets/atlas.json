@@ -7,5 +7,7 @@
   "wooden_log_top": [2,1],
   "leaves": [0,2],
   "desert_sand": [1,2],
-  "water": [2,2]
+  "water": [2,2],
+  "gravel": [3, 0],
+  "sand": [3,1]
 }
