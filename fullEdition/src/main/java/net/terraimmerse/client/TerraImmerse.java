@@ -1,7 +1,7 @@
 package net.terraimmerse.client;
 
 import net.terraimmerse.client.render.RenderThread;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import net.terraimmerse.client.input.InputHandler;
 import net.terraimmerse.client.manager.AtlasManager;
 import net.terraimmerse.world.GameTickThread;
@@ -15,7 +15,7 @@ public class TerraImmerse {
     public static RenderThread renderThread;
     public static PlayerEntity playerEntity;
     public static AtlasManager atlasManager;
-    public static WorldRenderer worldRenderer;
+    public static SceneRenderer sceneRenderer;
     public static void init() {
         renderThread = new RenderThread();
         atlasManager = new AtlasManager();
@@ -25,8 +25,8 @@ public class TerraImmerse {
     }
     public void run() {
         init();
-        ClientInitializer.init();
-        worldRenderer.init();
+        Client.init();
+        sceneRenderer.init();
         GameTickThread.entityMovementThread.setDaemon(true);
         GameTickThread.entityMovementThread.start();
         GameTickThread.gameTickThread.setDaemon(true);

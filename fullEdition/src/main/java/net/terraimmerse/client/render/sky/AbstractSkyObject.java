@@ -2,7 +2,7 @@ package net.terraimmerse.client.render.sky;
 
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.client.render.ShaderCompiler;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.joml.Matrix4f;
 import org.joml.Matrix3f;
-import org.joml.Vector3f;
 
 public abstract class AbstractSkyObject{
 	private int skyObjectLocModel;
@@ -65,12 +64,12 @@ public abstract class AbstractSkyObject{
         this.skyObjectB=b;
     }
     public void render(){
-        this.skyObjectView=new Matrix4f(new Matrix3f(WorldRenderer.view));
+        this.skyObjectView=new Matrix4f(new Matrix3f(SceneRenderer.view));
         GL20.glUseProgram(this.skyObjectShader);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(this.skyObjectLocModel, false, this.skyObjectModel.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(this.skyObjectLocView, false, this.skyObjectView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(this.skyObjectLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
+            GL20.glUniformMatrix4fv(this.skyObjectLocProj, false, SceneRenderer.projection.get(stack.mallocFloat(16)));
         }
         GL20.glUniform1f(this.skyObjectLocBrightness,2.0F);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);

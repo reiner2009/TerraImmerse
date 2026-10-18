@@ -2,7 +2,7 @@ package net.terraimmerse.client.render.sky;
 
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.client.render.ShaderCompiler;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.joml.Matrix4f;
 import org.joml.Matrix3f;
-import org.joml.Vector3f;
 
 public abstract class AbstractSunEffectRenderer{
     private int sunEffectLocModel;
@@ -68,7 +67,7 @@ public abstract class AbstractSunEffectRenderer{
         this.sunEffectAlpha=alpha;
     }
     public void render(){
-        this.sunEffectView=new Matrix4f(new Matrix3f(WorldRenderer.view));
+        this.sunEffectView=new Matrix4f(new Matrix3f(SceneRenderer.view));
         this.sunEffectModel=new Matrix4f().identity();
         this.sunEffectModel.translate(0,0,-1);
         GL11.glEnable(GL11.GL_BLEND);
@@ -77,7 +76,7 @@ public abstract class AbstractSunEffectRenderer{
         try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(this.sunEffectLocModel, false, this.sunEffectModel.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(this.sunEffectLocView, false, this.sunEffectView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(this.sunEffectLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
+            GL20.glUniformMatrix4fv(this.sunEffectLocProj, false, SceneRenderer.projection.get(stack.mallocFloat(16)));
         }
         GL20.glUniform1f(this.sunEffectLocBrightness,2.0F);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);

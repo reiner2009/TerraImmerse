@@ -2,7 +2,7 @@ package net.terraimmerse.client.render.sky;
 
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.client.render.ShaderCompiler;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.joml.Matrix4f;
 import org.joml.Matrix3f;
-import org.joml.Vector3f;
 
 public class SkyBoxRenderer{
 	private static int skyLocModel;
@@ -93,14 +92,14 @@ public class SkyBoxRenderer{
 		skyB=1.0F;
 	}
 	public static void render(){
-		skyView=new Matrix4f(new Matrix3f(WorldRenderer.view));
+		skyView=new Matrix4f(new Matrix3f(SceneRenderer.view));
 		skyModel=new Matrix4f().identity();
 		skyModel.translate(0,0,0);
 		GL20.glUseProgram(skyShader);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
             GL20.glUniformMatrix4fv(skyLocModel, false, skyModel.get(stack.mallocFloat(16)));
             GL20.glUniformMatrix4fv(skyLocView, false, skyView.get(stack.mallocFloat(16)));
-            GL20.glUniformMatrix4fv(skyLocProj, false, WorldRenderer.projection.get(stack.mallocFloat(16)));
+            GL20.glUniformMatrix4fv(skyLocProj, false, SceneRenderer.projection.get(stack.mallocFloat(16)));
         }
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, skyBoxTexture);

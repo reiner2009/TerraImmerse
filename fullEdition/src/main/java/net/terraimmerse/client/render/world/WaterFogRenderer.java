@@ -39,13 +39,13 @@ public class WaterFogRenderer {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
     }
-    public void render(){
+    public void render(float bright){
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(false);
         GL20.glUseProgram(shader);
-        GL20.glUniform3f(GL20.glGetUniformLocation(shader, "screenColor"), 0.157f, 0.471f, 0.710f);
+        GL20.glUniform3f(GL20.glGetUniformLocation(shader, "screenColor"), 0.157f * bright, 0.471f * bright, 0.710f * bright);
         GL20.glUniform1f(GL20.glGetUniformLocation(shader, "alpha"), 0.9f);
         GL30.glBindVertexArray(vao);
         GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);

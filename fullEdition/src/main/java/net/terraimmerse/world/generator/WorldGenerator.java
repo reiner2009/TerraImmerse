@@ -18,6 +18,7 @@ public class WorldGenerator {
     private static OpenSimplexNoise landscapeNoise;
     private static OpenSimplexNoise biomeNoise;
     private static TreeFeature treeFeature;
+    private static String[] plants;
     public static double getHeight(int x, int z){
         double n1 = landscapeNoise.getNoise2D(x * 0.1F, z * 0.1F).getValue() * 60 + 60;
         double n2 = landscapeNoise.getNoise2D(x * 0.4F, z * 0.4F).getValue() * 16 + 8;
@@ -62,12 +63,20 @@ public class WorldGenerator {
             treeFeature.place(new MaterialPos(materialPos.x, materialPos.y, materialPos.z), level);
         }
     }
+    public void tryPlacePlant(MaterialPos materialPos, Level level, int plantDistribution){
+        if (random.nextInt(plantDistribution) == 1) {
+            if(level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z).equals("air") && level.getMaterial(materialPos).equals("grass_cube")) {
+                level.setMaterial(new MaterialPos(materialPos.x, materialPos.y + 1, materialPos.z), plants[random.nextInt(plants.length)]);
+            }
+        }
+    }
     public WorldGenerator(Level level){
         LOGGER.info("Generating world...");
-        size=256;
+        size=800;
         landscapeNoise=new OpenSimplexNoise(0L);
         biomeNoise=new OpenSimplexNoise(1L);
         random=new Random();
+        plants=new String[]{"high_grass","high_grass","high_grass","high_grass", "flower"};
         for (int x = (int)-size/2; x < (int)size/2; x++){
             for (int z = (int)-size/2; z < (int)size/2; z++){
                 for (int y=0;y<getHeight(x,z);y++){
@@ -97,9 +106,11 @@ public class WorldGenerator {
         for (var entry : new HashMap<>(level.getLevel()).entrySet()){
             MaterialPos materialPos = entry.getKey();
             if(getBiome(materialPos.x, materialPos.z).equals(Biome.FOREST)) {
+                tryPlacePlant(materialPos, level, 100);
                 tryPlaceTree(materialPos, level, 30);
             }
             if(getBiome(materialPos.x, materialPos.z).equals(Biome.PLAINS)) {
+                tryPlacePlant(materialPos, level, 10);
                 tryPlaceTree(materialPos, level, 500);
             }
         }

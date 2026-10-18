@@ -6,7 +6,6 @@ public class SkyRenderer{
 	private static SkyBoxRenderer skyBoxRenderer;
 	public static SunRenderer sunRenderer;
 	private static SunEffectRenderer sunEffectRenderer;
-    private static StarsRenderer starsRenderer;
 	private static float bright;
 	private static float dark;
 	private static float t;
@@ -17,7 +16,6 @@ public class SkyRenderer{
 		skyBoxRenderer.init();
 		sunRenderer=new SunRenderer();
 		sunEffectRenderer=new SunEffectRenderer();
-        starsRenderer=new StarsRenderer();
 		brightness=1.0F;
 		sunStep=0.001F;
 	}
@@ -31,7 +29,6 @@ public class SkyRenderer{
         SkyBoxRenderer.skyG=brightness;
         SkyBoxRenderer.skyB=brightness;
         skyBoxRenderer.render();
-        starsRenderer.render();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         sunEffectRenderer.setAlpha(calculateSunEffectAlpha(SunRenderer.sunAngle));
@@ -41,6 +38,9 @@ public class SkyRenderer{
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
 	}
+    public static float getBright(){
+        return brightness;
+    }
 	public static void tickLight(){
 		SunRenderer.sunAngle+=sunStep;
 		if (SunRenderer.sunAngle>=360.0F){
