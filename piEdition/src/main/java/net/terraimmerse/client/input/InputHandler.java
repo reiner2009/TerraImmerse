@@ -30,7 +30,7 @@ public class InputHandler {
     private static boolean ctrlPressed;
     public static void init(){
         sensity=0.002F;
-        speed=0.3F;
+        speed=0.2F;
         wPressed=false;
         aPressed=false;
         sPressed=false;

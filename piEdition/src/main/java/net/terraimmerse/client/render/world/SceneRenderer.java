@@ -40,13 +40,13 @@ public class SceneRenderer {
     private static LevelRenderer translucentLevelRenderer;
     private static Level level;
     public static Vector3f direction;
-    public static void init(){
+    public static void init(Level level_){
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl", "WorldShader");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
         skyRenderer=new SkyRenderer();
         skyRenderer.init();
         waterFogRenderer=new WaterFogRenderer();
-        level = new Level();
+        level = level_;
         new WorldGenerator(level);
         LOGGER.info("Loading terrian...");
         levelRenderer = new LevelRenderer(level, RenderLayerMap.SOLIDE);
