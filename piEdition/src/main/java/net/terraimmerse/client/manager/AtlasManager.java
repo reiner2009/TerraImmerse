@@ -3,7 +3,7 @@ package net.terraimmerse.client.manager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.terraimmerse.client.render.world.ClientLevel;
+import net.terraimmerse.client.render.world.LevelRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class AtlasManager {
         }
         modelData=new HashMap<>();
         try {
-            InputStream modelDataFile = ClientLevel.class.getResourceAsStream("/assets/models.json");
+            InputStream modelDataFile = LevelRenderer.class.getResourceAsStream("/assets/models.json");
             if (modelDataFile == null) {
                 throw new RuntimeException("Couldn't find textures.json");
             }

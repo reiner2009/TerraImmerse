@@ -1,25 +1,28 @@
 package net.terraimmerse.client.render.world;
 
-import net.terraimmerse.client.render.MaterialRenderLayerMap;
+import net.terraimmerse.client.TerraImmerse;
+import net.terraimmerse.client.render.RenderLayerMap;
 import net.terraimmerse.client.render.RenderThread;
 import net.terraimmerse.client.render.ShaderCompiler;
 import net.terraimmerse.client.render.sky.SkyRenderer;
 import net.terraimmerse.client.render.sky.SunRenderer;
+import net.terraimmerse.world.entity.PlayerEntity;
 import net.terraimmerse.world.generator.WorldGenerator;
 import net.terraimmerse.client.manager.TextureManager;
 import net.terraimmerse.world.level.Level;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorldRenderer {
+public class SceneRenderer {
     private static final Logger LOGGER= LoggerFactory.getLogger(WorldGenerator.class);
     private static SkyRenderer skyRenderer;
+    private static WaterFogRenderer waterFogRenderer;
     private static ShaderCompiler shaderCompiler;
     private static int locModel;
     private static int locView;
@@ -32,21 +35,23 @@ public class WorldRenderer {
     public static Matrix4f view;
     public static Matrix4f projection;
     public static int shader;
-    private static ClientLevel clientLevel;
-    private static ClientLevel cutoutTextureClientLevel;
+    private static LevelRenderer levelRenderer;
+    private static LevelRenderer cutoutTextureLevelRenderer;
+    private static LevelRenderer translucentLevelRenderer;
     private static Level level;
     public static Vector3f direction;
-
     public static void init(){
         shaderCompiler=new ShaderCompiler("/assets/shader/vertex.glsl", "/assets/shader/fragment.glsl", "WorldShader");
         shader=shaderCompiler.createShaderProgram(shaderCompiler.vertexShaderSrc, shaderCompiler.fragmentShaderSrc);
         skyRenderer=new SkyRenderer();
         skyRenderer.init();
+        waterFogRenderer=new WaterFogRenderer();
         level = new Level();
         new WorldGenerator(level);
         LOGGER.info("Loading terrian...");
-        clientLevel = new ClientLevel(level, MaterialRenderLayerMap.SOLIDE);
-        cutoutTextureClientLevel = new ClientLevel(level, MaterialRenderLayerMap.CUTOUT);
+        levelRenderer = new LevelRenderer(level, RenderLayerMap.SOLIDE);
+        cutoutTextureLevelRenderer = new LevelRenderer(level, RenderLayerMap.CUTOUT);
+        translucentLevelRenderer = new LevelRenderer(level, RenderLayerMap.TRANSLUCENT);
         locModel=GL20.glGetUniformLocation(shader, "model");
         locView=GL20.glGetUniformLocation(shader, "view");
         locProj=GL20.glGetUniformLocation(shader, "projection");
@@ -70,7 +75,7 @@ public class WorldRenderer {
                 2000.0F
         );
     }
-    public static void drawScene(){
+    public static void renderScene(){
         skyRenderer.render();
         GL20.glUseProgram(shader);
         GL20.glActiveTexture(GL20.GL_TEXTURE0);
@@ -83,24 +88,28 @@ public class WorldRenderer {
             GL20.glUniformMatrix4fv(locProj, false, projection.get(stack.mallocFloat(16)));
         }
         GL20.glUniform1i(locCutout, 0);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, clientLevel.getVao());
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 0L);
-        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8*Float.BYTES, 12L);
-        GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 20L);
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glEnableVertexAttribArray(1);
-        GL20.glEnableVertexAttribArray(2);
-        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) clientLevel.getVertices().length / 8);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL30.glBindVertexArray(levelRenderer.getVao());
+        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) levelRenderer.getVertices().length / 8);
+        GL30.glBindVertexArray(0);
         GL20.glUniform1i(locCutout, 1);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cutoutTextureClientLevel.getVao());
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 0L);
-        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 8*Float.BYTES, 12L);
-        GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 8*Float.BYTES, 20L);
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glEnableVertexAttribArray(1);
-        GL20.glEnableVertexAttribArray(2);
-        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int)cutoutTextureClientLevel.getVertices().length / 8);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL30.glBindVertexArray(cutoutTextureLevelRenderer.getVao());
+        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) cutoutTextureLevelRenderer.getVertices().length / 8);
+        GL30.glBindVertexArray(0);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL20.glUniform1i(locCutout, 0);
+        GL30.glBindVertexArray(translucentLevelRenderer.getVao());
+        GL20.glDrawArrays(GL11.GL_TRIANGLES, 0, (int) translucentLevelRenderer.getVertices().length / 8);
+        GL30.glBindVertexArray(0);
+        GL11.glDisable(GL11.GL_BLEND);
+        PlayerEntity player=TerraImmerse.playerEntity;
+        if(level.getMaterial((int)Math.floor(player.pos.x), (int)Math.floor(player.pos.y), (int)Math.floor(player.pos.z)).equals("water")){
+            waterFogRenderer.render(SkyRenderer.getBright());
+        }
+    }
+    public static void updateLevel(){
+        levelRenderer.update();
+        cutoutTextureLevelRenderer.update();
+        translucentLevelRenderer.update();
     }
 }

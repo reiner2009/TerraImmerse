@@ -2,7 +2,7 @@ package net.terraimmerse.client.input;
 
 import net.terraimmerse.client.TerraImmerse;
 import net.terraimmerse.client.render.RenderThread;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.joml.Vector3f;
 
@@ -62,10 +62,10 @@ public class InputHandler {
         front.y = (float)Math.sin(pitch);
         front.z = (float)(Math.cos(pitch) * Math.cos(yaw));
         front.normalize();
-        WorldRenderer.direction = new Vector3f(TerraImmerse.playerEntity.getPos()).add(front);
-        WorldRenderer.view.identity().lookAt(
+        SceneRenderer.direction = new Vector3f(TerraImmerse.playerEntity.getPos()).add(front);
+        SceneRenderer.view.identity().lookAt(
                 TerraImmerse.playerEntity.getPos(),
-                WorldRenderer.direction,
+                SceneRenderer.direction,
                 new Vector3f(0, 1, 0)
         );
         move_x=0;

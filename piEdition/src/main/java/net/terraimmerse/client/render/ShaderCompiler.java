@@ -32,7 +32,7 @@ public class ShaderCompiler {
             throw new RuntimeException("Couldn't load shader: "+e);
         }
     }
-    public int compileShader(String source, int shaderType){
+    private int compileShader(String source, int shaderType){
         int shader= GL20.glCreateShader(shaderType);
         GL20.glShaderSource(shader, source);
         GL20.glCompileShader(shader);

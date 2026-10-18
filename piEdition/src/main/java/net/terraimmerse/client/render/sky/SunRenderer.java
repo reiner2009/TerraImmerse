@@ -1,7 +1,5 @@
 package net.terraimmerse.client.render.sky;
 
-import net.terraimmerse.client.render.world.WorldRenderer;
-import org.lwjgl.opengl.GL20;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -10,7 +8,7 @@ public class SunRenderer extends AbstractSkyObject{
     public static float lightAngle;
     public SunRenderer(){
         super("/assets/textures/sky/sun.png", sunVertices, 10);
-        sunAngle=349;
+        sunAngle=10;
     }
     private static float[] sunVertices = {
             -1.0F,1.0F,0.0F,0.0F,1.0F,

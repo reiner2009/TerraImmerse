@@ -17,27 +17,30 @@ public class SkyRenderer{
 		sunRenderer=new SunRenderer();
 		sunEffectRenderer=new SunEffectRenderer();
 		brightness=1.0F;
-		sunStep=0.01F;
+		sunStep=0.001F;
 	}
 	public static void render(){
 		brightness=calculateLight(SunRenderer.sunAngle);
 		GL11.glClearColor(0.2F*brightness, 0.4F*brightness, 0.8F*brightness, 1.0F);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthMask(false);
-		SkyBoxRenderer.skyR=brightness;
-		SkyBoxRenderer.skyG=brightness;
-		SkyBoxRenderer.skyB=brightness;
-		skyBoxRenderer.render();
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		sunEffectRenderer.setAlpha(calculateSunEffectAlpha(SunRenderer.sunAngle));
-		sunEffectRenderer.render();
-		sunRenderer.render();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glDepthMask(true);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        SkyBoxRenderer.skyR=brightness;
+        SkyBoxRenderer.skyG=brightness;
+        SkyBoxRenderer.skyB=brightness;
+        skyBoxRenderer.render();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        sunEffectRenderer.setAlpha(calculateSunEffectAlpha(SunRenderer.sunAngle));
+        sunEffectRenderer.render();
+        sunRenderer.render();
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
 	}
+    public static float getBright(){
+        return brightness;
+    }
 	public static void tickLight(){
 		SunRenderer.sunAngle+=sunStep;
 		if (SunRenderer.sunAngle>=360.0F){

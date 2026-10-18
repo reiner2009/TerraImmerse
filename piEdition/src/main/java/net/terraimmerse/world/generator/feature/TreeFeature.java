@@ -1,6 +1,6 @@
 package net.terraimmerse.world.generator.feature;
 
-import net.terraimmerse.core.MaterialPos;
+import net.terraimmerse.world.material.MaterialPos;
 import net.terraimmerse.world.level.Level;
 
 import java.util.HashMap;
@@ -62,5 +62,13 @@ public class TreeFeature implements Feature{
             String material=entry.getValue();
             level.setMaterial(relativePos.x + treePos.x, relativePos.y + treePos.y + 1, relativePos.z + treePos.z, material);
         }
+    }
+    @Override
+    public boolean checkSpawnRules(Level level, MaterialPos materialPos){
+        return level.getMaterial(materialPos.x, materialPos.y, materialPos.z).equals("grass_cube")
+                && level.getMaterial(materialPos.x + 1, materialPos.y + 1, materialPos.z).equals("air")
+                && level.getMaterial(materialPos.x - 1, materialPos.y + 1, materialPos.z).equals("air")
+                && level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z + 1).equals("air")
+                && level.getMaterial(materialPos.x, materialPos.y + 1, materialPos.z - 1).equals("air");
     }
 }

@@ -1,7 +1,7 @@
 package net.terraimmerse.client.render;
 
 import net.terraimmerse.client.input.InputHandler;
-import net.terraimmerse.client.render.world.WorldRenderer;
+import net.terraimmerse.client.render.world.SceneRenderer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -23,8 +23,8 @@ public class RenderThread {
         GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
         LOGGER.info("Initialized videoMode");
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
-        LOGGER.info("OpenGL version: 2.0");
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 1);
+        LOGGER.info("OpenGL version: 3.3");
         width=videoMode.width();
         height=videoMode.height();
         window = GLFW.glfwCreateWindow(
@@ -55,7 +55,7 @@ public class RenderThread {
         while (!GLFW.glfwWindowShouldClose(RenderThread.window)) {
             GLFW.glfwPollEvents();
             InputHandler.handleInput();
-            WorldRenderer.drawScene();
+            SceneRenderer.renderScene();
             GLFW.glfwSwapBuffers(RenderThread.window);
         }
     }
