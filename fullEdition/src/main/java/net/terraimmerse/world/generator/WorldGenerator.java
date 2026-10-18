@@ -72,7 +72,7 @@ public class WorldGenerator {
     }
     public WorldGenerator(Level level){
         LOGGER.info("Generating world...");
-        size=800;
+        size=256;
         landscapeNoise=new OpenSimplexNoise(0L);
         biomeNoise=new OpenSimplexNoise(1L);
         random=new Random();

@@ -7,6 +7,7 @@ import net.terraimmerse.client.manager.AtlasManager;
 import net.terraimmerse.world.GameTickThread;
 import net.terraimmerse.world.entity.PlayerEntity;
 import net.terraimmerse.world.generator.WorldGenerator;
+import net.terraimmerse.world.level.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +17,19 @@ public class TerraImmerse {
     public static PlayerEntity playerEntity;
     public static AtlasManager atlasManager;
     public static SceneRenderer sceneRenderer;
+    private static Level level;
     public static void init() {
+        level=new Level();
         renderThread = new RenderThread();
         atlasManager = new AtlasManager();
         playerEntity = new PlayerEntity();
         InputHandler.init();
+        Client.init();
+        sceneRenderer.init(level);
         LOGGER.info("Initialized TerraImmerse");
     }
     public void run() {
         init();
-        Client.init();
-        sceneRenderer.init();
         GameTickThread.entityMovementThread.setDaemon(true);
         GameTickThread.entityMovementThread.start();
         GameTickThread.gameTickThread.setDaemon(true);
@@ -35,6 +38,9 @@ public class TerraImmerse {
         RenderThread.render();
         RenderThread.shutdown();
         LOGGER.info("Stopped!");
+    }
+    public static Level getLevel(){
+        return level;
     }
     public static void main(String[] args){
 		System.out.println("Starting TerraImmerse version 0.4.0-classic");
